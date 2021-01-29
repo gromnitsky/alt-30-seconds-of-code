@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>30 seconds of code</title>
 <style>
   body { font-family: sans-serif; }
@@ -21,7 +22,7 @@
     width: var(--toc-width);
   }
   
-  @media (min-width: 900px) {
+  @media screen and (min-width: 900px) {
     body { margin: 0; }
     #doc {
       width: var(--doc-width);
@@ -52,18 +53,14 @@
 
   function render(list, filter) {
       document.querySelector('#toc__list').innerHTML = list(filter).map( v => {
-          return `<li><a href="#${v.id}">${v.name}</a></li>`
+          return `<li><a href="#${v}">${v}</a></li>`
       }).join`\n`
   }
 
   function mk_list() {
-      let h1s = [...document.querySelectorAll('h1')].map( (v, idx) => {
-          let id = `id-${idx}`
-          v.id = id
-          return { id, name: v.innerText }
-      })
+      let h1s = [...document.querySelectorAll('h1')].map( v => v.innerText)
       return query => {
-          return query ? h1s.filter( v => v.name.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h1s
+          return query ? h1s.filter( v => v.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h1s
       }
   }
 </script>
