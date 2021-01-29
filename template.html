@@ -1,0 +1,72 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>30 seconds of code</title>
+<style>
+  body { font-family: sans-serif; }
+  h1, pre {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  a { text-decoration: none; }
+  pre { background: #fafafa; }
+  :root {
+    --body-width: 900px;
+    --toc-width: 280px;
+    --doc-width: 620px;
+  }
+  #toc { display: none; }
+  #toc ul { padding-left: 20px; }
+  #toc > div {
+    margin: 1em 0 1em auto;
+    width: var(--toc-width);
+  }
+  
+  @media (min-width: 900px) {
+    body { margin: 0; }
+    #doc {
+      width: var(--doc-width);
+      margin-left: calc(100%/2 - var(--body-width)/2 + var(--toc-width));
+    }
+    #toc {
+      display: block;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: calc(100%/2 - var(--body-width)/2 + var(--toc-width) - 1em);
+      overflow-x: auto;
+      overflow-y: scroll;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', main)
+  
+  function main() {
+      let list = mk_list()
+      document.querySelector('#toc input').oninput = evt => {
+          render(list, evt.target.value)
+      }
+      render(list)
+  }
+
+  function render(list, filter) {
+      document.querySelector('#toc__list').innerHTML = list(filter).map( v => {
+          return `<li><a href="#${v.id}">${v.name}</a></li>`
+      }).join`\n`
+  }
+
+  function mk_list() {
+      let h1s = [...document.querySelectorAll('h1')].map( (v, idx) => {
+          let id = `id-${idx}`
+          v.id = id
+          return { id, name: v.innerText }
+      })
+      return query => {
+          return query ? h1s.filter( v => v.name.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h1s
+      }
+  }
+</script>
+
+<nav id="toc"><div><input type="search"><ul id="toc__list"></ul></div></nav>
+<main id="doc">
