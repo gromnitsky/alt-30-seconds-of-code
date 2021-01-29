@@ -10,3 +10,6 @@ $(out)/30-seconds-of-code.html: template.html $(patsubst $(i)/%.md, $(out)/%.htm
 
 SHELL := bash -o pipefail
 .DELETE_ON_ERROR:
+
+upload: $(out)/30-seconds-of-code.html
+	rsync -av $< alex@sigwait.tk:'~/public_html/demo/misc/'
