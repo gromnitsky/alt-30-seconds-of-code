@@ -4,7 +4,7 @@
 <title>30 seconds of code</title>
 <style>
   body { font-family: sans-serif; }
-  h1, pre {
+  h2, pre {
     white-space: pre-wrap;
     overflow-wrap: break-word;
   }
@@ -60,9 +60,9 @@
   }
 
   function mk_list() {
-      let h1s = [...document.querySelectorAll('h1')].map( v => v.innerText)
+      let h2s = [...document.querySelectorAll('h2')].map( v => v.innerText)
       return query => {
-          return query ? h1s.filter( v => v.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h1s
+          return query ? h2s.filter( v => v.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h2s
       }
   }
 </script>
