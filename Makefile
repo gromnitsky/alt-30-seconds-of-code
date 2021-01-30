@@ -10,7 +10,7 @@ title = $(notdir $(basename $@))
 
 $(out)/30-seconds-of-code.html: template.html $(patsubst $(i)/%.md, $(out)/%.html, $(sort $(wildcard $(i)/*.md)))
 	cat $^ > $@
-	echo echo '</main>' >> $@
+	echo '</main>' >> $@
 
 .DELETE_ON_ERROR:
 
