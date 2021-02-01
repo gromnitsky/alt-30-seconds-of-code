@@ -23,7 +23,7 @@
     margin: 1em 0 1em auto;
     width: calc(var(--toc-width) - 1em);
   }
-  
+
   @media screen and (min-width: 900px) {
     body { margin: 0; }
     #doc {
@@ -45,7 +45,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', main)
-  
+
   function main() {
       mk_previews()
       let list = mk_list()
@@ -56,59 +56,51 @@
   }
 
   function mk_previews() {
-      let inject_after = (node, css_query, html) => {
-          node.querySelector(css_query).insertAdjacentHTML('afterend', html)
+      for (let article of document.querySelectorAll('article')) {
+          article.querySelector('h2').insertAdjacentHTML('afterend', '<button>Preview</button><div style="margin: 1em 0" class="preview" />')
       }
-      let inject_preview = article => {
-          inject_after(article, 'button', '<div style="margin: 1em 0" class="preview" />')
-      }
-      let mk_dom = article => {
-          inject_after(article, 'h2', '<button>Preview</button>')
-          inject_preview(article)
-      }
-      
-      [...document.querySelectorAll('article')].forEach(mk_dom)
 
-      let btn_handler = evt => {
+      let preview_handler = evt => {
           let article = document.getElementById(evt.target.parentElement.id)
           let preview = article.querySelector('div.preview')
-          if (preview.childElementCount) {
-              preview.remove()
-              inject_preview(article)
+          if (preview.childElementCount) { // has iframe
+              preview.textContent = ''
               return
           }
 
           let html = article.querySelector('pre.html > code')
           let css = article.querySelector('pre.css > code')
           let js = article.querySelector('pre.js > code')
-
-          let dynurl = (html, css, js) => {
-              let url = (code, type) => {
-                  return URL.createObjectURL(new Blob([code], { type }))
-              }
-              let css_url = url(css, 'text/css')
-              let js_url = url(js, 'text/javascript')
-              let doc = '<!doctype html>\n'
-                  + `<link rel="stylesheet" href="${css_url}" />`
-                  + html
-                  + (js ? `<script src="${js_url}"><\/script>` : '')
-              return url(doc, 'text/html')
-          }
-          
-          let iframe = document.createElement('iframe')
-          iframe.src = dynurl(html.textContent, css.textContent, js && js.textContent)
-          preview.appendChild(iframe)
-          iframe.contentWindow.onload = () => {
-              let cur = iframe.contentWindow.document.body.scrollHeight
-              if (cur > 150) iframe.height = cur + 16
-          }
+          iframe(preview, html.textContent, css.textContent, js && js.textContent)
       }
-      
+
       for (let btn of document.querySelectorAll('button')) {
-          btn.onclick = btn_handler
+          btn.onclick = preview_handler
       }
   }
-  
+
+  function iframe(parent, html, css, js) {
+      let src = (html, css, js) => {
+          let url = (str, mime_type) => {
+              return URL.createObjectURL(new Blob([str], { type: mime_type }))
+          }
+          let css_url = url(css, 'text/css')
+          let js_url = url(js, 'text/javascript')
+          let doc = ['<!doctype html>',
+                     `<link rel="stylesheet" href="${css_url}" />`, html,
+                     (js ? `<script src="${js_url}"><\/script>` : '')].join`\n`
+          return url(doc, 'text/html')
+      }
+
+      let node = document.createElement('iframe')
+      node.src = src(html, css, js)
+      parent.appendChild(node)
+      node.contentWindow.onload = () => {
+          let cur = node.contentWindow.document.body.scrollHeight
+          if (cur > 150) node.height = cur + 16
+      }
+  }
+
   function mk_list() {
       let h2s = [...document.querySelectorAll('h2')].map( v => v.innerText)
       return query => {
