@@ -62,7 +62,7 @@
 
   function mk_previews() {
       for (let article of document.querySelectorAll('article')) {
-          article.querySelector('h2').insertAdjacentHTML('afterend', '<button>Preview</button><div style="margin: 1em 0" class="preview" />')
+          article.querySelector('h2').insertAdjacentHTML('afterend', '<button class="preview">Preview</button>\n<button class="codepen">CodePen</button><div style="margin: 1em 0" class="preview" />')
       }
 
       let preview_handler = evt => {
@@ -72,20 +72,42 @@
               preview.textContent = ''
               return
           }
+          inject_iframe(preview, page(article))
+      }
+      let page = article => {
+          let r = ['html', 'css', 'js'].map( v => {
+              let node = article.querySelector(`pre.${v} > code`)
+              return node && node.textContent
+          })
+          return { html: r[0], css: r[1], js: r[2] }
+      }
+      let codepen_handler = evt => {
+          let article = document.getElementById(evt.target.parentElement.id)
+          let payload = page(article)
+          payload.title = article.querySelector('h2').innerText
 
-          let html = article.querySelector('pre.html > code')
-          let css = article.querySelector('pre.css > code')
-          let js = article.querySelector('pre.js > code')
-          inject_iframe(preview, html.textContent, css.textContent,
-                        js && js.textContent)
+          let form = document.createElement('form')
+          form.style.display = 'none'
+          form.action = 'https://codepen.io/pen/define'
+          form.method = 'POST'
+          form.target = '_blank'
+          form.innerHTML = '<input name="data">'
+          form.querySelector('input[name]').value = JSON.stringify(payload)
+
+          article.appendChild(form)
+          form.submit()
+          form.remove()
       }
 
-      for (let btn of document.querySelectorAll('button')) {
+      for (let btn of document.querySelectorAll('button.preview')) {
           btn.onclick = preview_handler
+      }
+      for (let btn of document.querySelectorAll('button.codepen')) {
+          btn.onclick = codepen_handler
       }
   }
 
-  function inject_iframe(parent, html, css, js) {
+  function inject_iframe(parent, {html, css, js}) {
       let node = document.createElement('iframe')
       node.srcdoc = ['<!doctype html>', `<style>${css}</style>`, html,
                      (js ? `<script>${js}<\/script>` : '')].join`\n`
