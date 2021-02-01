@@ -19,4 +19,4 @@ $(o)/index.html: template.html $(patsubst $(i)/%.md, $(o)/%.html, $(sort $(wildc
 .DELETE_ON_ERROR:
 
 upload: $(o)/index.html
-	rsync -av $< alex@sigwait.tk:'~/public_html/demo/misc/30-seconds-of-code/$o/'
+	rsync -av $< alex@sigwait.tk:'~/public_html/demo/misc/30-seconds-of-code/$(notdir $(o))/'
