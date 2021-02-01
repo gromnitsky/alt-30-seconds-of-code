@@ -12,6 +12,10 @@
   a { text-decoration: none; }
   pre { background: #fafafa; }
   iframe { width: 100%; }
+  div.preview { margin: 1em 0; }
+  @media print {
+    .preview, .codepen { display: none; }
+  }
   :root {
     --body-width: 900px;
     --toc-width: 260px;
@@ -62,7 +66,7 @@
 
   function mk_previews() {
       for (let article of document.querySelectorAll('article')) {
-          article.querySelector('h2').insertAdjacentHTML('afterend', '<button class="preview">Preview</button>\n<button class="codepen">CodePen</button><div style="margin: 1em 0" class="preview" />')
+          article.querySelector('h2').insertAdjacentHTML('afterend', '<button class="preview">Preview</button>\n<button class="codepen">CodePen</button><div class="preview" />')
       }
 
       let preview_handler = evt => {
