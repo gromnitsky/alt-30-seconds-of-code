@@ -5,7 +5,7 @@
 <title>30 seconds of code: <%= t %></title>
 <style>
   body { font-family: sans-serif; }
-  h2, pre {
+  h2, pre, #toc ul li {
     white-space: pre-wrap;
     overflow-wrap: break-word;
   }
@@ -42,7 +42,6 @@
       bottom: 0;
       width: calc(var(--margin-left) - 1em);
       min-width: calc(var(--toc-width) - 1em);
-      overflow-x: auto;
       overflow-y: scroll;
     }
   }
