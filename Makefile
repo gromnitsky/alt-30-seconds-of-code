@@ -1,18 +1,20 @@
 $(if $(i),,$(error i= param is missing))
-out := _out
+o := _out
 
-$(out)/%.html: $(i)/%.md
+$(o)/%.html: $(i)/%.md
 	@mkdir -p $(dir $@)
-	echo '<h2 id="$(title)">$(title)</h2>' > $@
+	echo '<article id="$(title)">' > $@
+	echo '<h2>$(title)</h2>' >> $@
 	pandoc $< -t html --no-highlight >> $@
+	echo '</article>' >> $@
 
-title = $(notdir $(basename $@))
+title = $(notdir $(basename $<))
 
-$(out)/30-seconds-of-code.html: template.html $(patsubst $(i)/%.md, $(out)/%.html, $(sort $(wildcard $(i)/*.md)))
+$(o)/index.html: template.html $(patsubst $(i)/%.md, $(o)/%.html, $(sort $(wildcard $(i)/*.md)))
 	cat $^ > $@
 	echo '</main>' >> $@
 
 .DELETE_ON_ERROR:
 
-upload: $(out)/30-seconds-of-code.html
-	rsync -av $< alex@sigwait.tk:'~/public_html/demo/misc/'
+upload: $(o)/index.html
+	rsync -av $< alex@sigwait.tk:'~/public_html/demo/misc/30-seconds-of-code/$o/'

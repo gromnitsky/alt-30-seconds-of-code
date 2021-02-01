@@ -46,11 +46,69 @@
   document.addEventListener('DOMContentLoaded', main)
   
   function main() {
+      mk_previews()
       let list = mk_list()
       document.querySelector('#toc input').oninput = evt => {
           render(list, evt.target.value)
       }
       render(list)
+  }
+
+  function mk_previews() {
+      let inject_after = (node, css_query, html) => {
+          let t = node.querySelector(css_query)
+          t.insertAdjacentHTML('afterend', html)
+      }
+      let inject_preview = article => {
+          inject_after(article, 'button', '<div style="display: none; margin: 1em 0; outline: 1px solid lightgray; padding: 0.5em" class="preview" />')
+      }
+      let mk_dom = article => {
+          inject_after(article, 'h2', '<button>Preview</button>')
+          inject_preview(article)
+      }
+      
+      [...document.querySelectorAll('article')].forEach(mk_dom)
+
+      let btn_handler = evt => {
+          let article = document.getElementById(evt.target.parentElement.id)
+          let preview = article.querySelector('div.preview')
+          if (preview.shadowRoot) {
+              preview.remove()
+              inject_preview(article)
+              return
+          }
+
+          let html = article.querySelector('pre.html > code')
+          let css = article.querySelector('pre.css > code')
+          let js = article.querySelector('pre.js > code')
+          
+          let sh = preview.attachShadow({mode: 'open'})
+          sh.innerHTML = html.textContent
+          let node_append = (name, text) => {
+              let script = document.createElement(name)
+              script.textContent = text
+              sh.appendChild(script)
+          }
+          node_append('style', ':host { display: block; contain: content; all: initial; }')
+          node_append('style', css.textContent)
+          if (js) {
+              let script = document.createElement('script')
+              script.textContent = js.textContent
+              sh.appendChild(script)
+          }
+          preview.style.display = 'block'
+      }
+      
+      for (let btn of document.querySelectorAll('button')) {
+          btn.onclick = btn_handler
+      }
+  }
+  
+  function mk_list() {
+      let h2s = [...document.querySelectorAll('h2')].map( v => v.innerText)
+      return query => {
+          return query ? h2s.filter( v => v.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h2s
+      }
   }
 
   function render(list, filter) {
@@ -59,12 +117,6 @@
       }).join`\n`
   }
 
-  function mk_list() {
-      let h2s = [...document.querySelectorAll('h2')].map( v => v.innerText)
-      return query => {
-          return query ? h2s.filter( v => v.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h2s
-      }
-  }
 </script>
 
 <nav id="toc"><div><input type="search"><ul id="toc__list"></ul></div></nav>
