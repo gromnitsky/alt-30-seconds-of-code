@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>30 seconds of code</title>
+<title>30 seconds of code: <%= t %></title>
 <style>
   body { font-family: sans-serif; }
   h2, pre {
@@ -47,12 +47,17 @@
   document.addEventListener('DOMContentLoaded', main)
 
   function main() {
-      mk_previews()
+      if (template_type() === 'css') mk_previews()
       let list = mk_list()
       document.querySelector('#toc input').oninput = evt => {
           render(list, evt.target.value)
       }
       render(list)
+  }
+
+  function template_type() {
+      let t = document.querySelector('title').innerText.split(/\s+/)
+      return t[t.length-1]
   }
 
   function mk_previews() {
