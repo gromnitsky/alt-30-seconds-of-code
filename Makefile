@@ -13,7 +13,7 @@ $(o)/%.html: $(i)/%.md
 title = $(notdir $(basename $<))
 
 $(o)/index.html: template.html $(patsubst $(i)/%.md, $(o)/%.html, $(sort $(wildcard $(i)/*.md)))
-	cat $^ | erb t=$(t) > $@
+	cat $^ | erb date=`git -C $(dir $(i)) log -1 --format=%cI`  t=$(t) > $@
 	echo '</main>' >> $@
 
 .DELETE_ON_ERROR:
