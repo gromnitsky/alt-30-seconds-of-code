@@ -10,10 +10,11 @@
   }
   a { text-decoration: none; }
   pre { background: #fafafa; }
+  iframe { width: 100%; }
   :root {
     --body-width: 900px;
-    --toc-width: 280px;
-    --doc-width: 620px;
+    --toc-width: 260px;
+    --doc-width: 640px;
     --margin-left: calc(100%/2 - var(--body-width)/2 + var(--toc-width))
   }
   #toc { display: none; }
@@ -56,11 +57,10 @@
 
   function mk_previews() {
       let inject_after = (node, css_query, html) => {
-          let t = node.querySelector(css_query)
-          t.insertAdjacentHTML('afterend', html)
+          node.querySelector(css_query).insertAdjacentHTML('afterend', html)
       }
       let inject_preview = article => {
-          inject_after(article, 'button', '<div style="display: none; margin: 1em 0; outline: 1px solid lightgray; padding: 0.5em" class="preview" />')
+          inject_after(article, 'button', '<div style="margin: 1em 0" class="preview" />')
       }
       let mk_dom = article => {
           inject_after(article, 'h2', '<button>Preview</button>')
@@ -72,7 +72,7 @@
       let btn_handler = evt => {
           let article = document.getElementById(evt.target.parentElement.id)
           let preview = article.querySelector('div.preview')
-          if (preview.shadowRoot) {
+          if (preview.childElementCount) {
               preview.remove()
               inject_preview(article)
               return
@@ -81,22 +81,27 @@
           let html = article.querySelector('pre.html > code')
           let css = article.querySelector('pre.css > code')
           let js = article.querySelector('pre.js > code')
+
+          let dynurl = (html, css, js) => {
+              let url = (code, type) => {
+                  return URL.createObjectURL(new Blob([code], { type }))
+              }
+              let css_url = url(css, 'text/css')
+              let js_url = url(js, 'text/javascript')
+              let doc = '<!doctype html>\n'
+                  + `<link rel="stylesheet" href="${css_url}" />`
+                  + html
+                  + (js ? `<script src="${js_url}"><\/script>` : '')
+              return url(doc, 'text/html')
+          }
           
-          let sh = preview.attachShadow({mode: 'open'})
-          sh.innerHTML = html.textContent
-          let node_append = (name, text) => {
-              let script = document.createElement(name)
-              script.textContent = text
-              sh.appendChild(script)
+          let iframe = document.createElement('iframe')
+          iframe.src = dynurl(html.textContent, css.textContent, js && js.textContent)
+          preview.appendChild(iframe)
+          iframe.contentWindow.onload = () => {
+              let cur = iframe.contentWindow.document.body.scrollHeight
+              if (cur > 150) iframe.height = cur + 16
           }
-          node_append('style', ':host { display: block; contain: content; all: initial; }')
-          node_append('style', css.textContent)
-          if (js) {
-              let script = document.createElement('script')
-              script.textContent = js.textContent
-              sh.appendChild(script)
-          }
-          preview.style.display = 'block'
       }
       
       for (let btn of document.querySelectorAll('button')) {
