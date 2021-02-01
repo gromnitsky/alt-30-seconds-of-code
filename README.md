@@ -5,6 +5,11 @@
 
 Why & how: http://gromnitsky.blogspot.com/2021/01/fixing-30-seconds-of-code.html
 
+## Reqs
+
+* pandoc
+* ruby
+
 ## Compilation
 
 1. Clone one of the supported repos, for example, about css:
@@ -13,7 +18,7 @@ Why & how: http://gromnitsky.blogspot.com/2021/01/fixing-30-seconds-of-code.html
 
 2. Clone this repo, cd to it.
 
-3. Generate `_out/css/index.html`
+3. Generate `_out/css/index.html`:
 
         $ make i=../30-seconds-of-css/snippets o=_out/css t=css
 
