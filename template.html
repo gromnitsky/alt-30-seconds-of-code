@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="application-name" content="snippets" data-template="<%= t %>">
 <title>30 seconds of code: <%= t %></title>
 <style>
   body { font-family: sans-serif; }
@@ -56,8 +57,7 @@
   }
 
   function template_type() {
-      let t = document.querySelector('title').innerText.split(/\s+/)
-      return t[t.length-1]
+      return document.querySelector('meta[name="application-name"]').dataset.template
   }
 
   function mk_previews() {
@@ -76,7 +76,8 @@
           let html = article.querySelector('pre.html > code')
           let css = article.querySelector('pre.css > code')
           let js = article.querySelector('pre.js > code')
-          iframe(preview, html.textContent, css.textContent, js && js.textContent)
+          inject_iframe(preview, html.textContent, css.textContent,
+                        js && js.textContent)
       }
 
       for (let btn of document.querySelectorAll('button')) {
@@ -84,21 +85,10 @@
       }
   }
 
-  function iframe(parent, html, css, js) {
-      let src = (html, css, js) => {
-          let url = (str, mime_type) => {
-              return URL.createObjectURL(new Blob([str], { type: mime_type }))
-          }
-          let css_url = url(css, 'text/css')
-          let js_url = url(js, 'text/javascript')
-          let doc = ['<!doctype html>',
-                     `<link rel="stylesheet" href="${css_url}" />`, html,
-                     (js ? `<script src="${js_url}"><\/script>` : '')].join`\n`
-          return url(doc, 'text/html')
-      }
-
+  function inject_iframe(parent, html, css, js) {
       let node = document.createElement('iframe')
-      node.src = src(html, css, js)
+      node.srcdoc = ['<!doctype html>', `<style>${css}</style>`, html,
+                     (js ? `<script>${js}<\/script>` : '')].join`\n`
       parent.appendChild(node)
       node.contentWindow.onload = () => {
           let cur = node.contentWindow.document.body.scrollHeight
