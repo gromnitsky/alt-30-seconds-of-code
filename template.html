@@ -51,7 +51,7 @@
   document.addEventListener('DOMContentLoaded', main)
 
   function main() {
-      if (template_type() === 'css') mk_previews()
+      if (template_type() === 'react') mk_previews()
       let list = mk_list()
       document.querySelector('#toc input').oninput = evt => {
           render(list, evt.target.value)
@@ -78,16 +78,21 @@
           inject_iframe(preview, page(article))
       }
       let page = article => {
-          let r = ['html', 'css', 'js'].map( v => {
-              let node = article.querySelector(`pre.${v} > code`)
-              return node && node.textContent
+          let r = ['html', 'css', 'js', 'jsx'].map( v => {
+              return [...article.querySelectorAll(`pre.${v} > code`)]
+                  .map( v => v.textContent).join`\n`
           })
-          return { html: r[0], css: r[1], js: r[2] }
+          return { html: r[0] || '<div id="root"></div>', css: r[1], js: r[2], jsx: r[3] }
       }
       let codepen_handler = evt => {
           let article = document.getElementById(evt.target.parentElement.id)
           let payload = page(article)
           payload.title = article.querySelector('h2').innerText
+          
+          payload.js_pre_processor = 'babel'
+          payload.js_external = 'https://unpkg.com/react@17/umd/react.development.js;https://unpkg.com/react-dom@17/umd/react-dom.development.js'
+          payload.js = [payload.js, payload.jsx].join`\n`
+          delete payload.jsx
 
           let form = document.createElement('form')
           form.style.display = 'none'
@@ -110,10 +115,17 @@
       }
   }
 
-  function inject_iframe(parent, {html, css, js}) {
+  function inject_iframe(parent, {html, css, js, jsx}) {
       let node = document.createElement('iframe')
-      node.srcdoc = ['<!doctype html>', `<style>${css}</style>`, html,
-                     (js ? `<script>${js}<\/script>` : '')].join`\n`
+      node.srcdoc = [
+          '<!doctype html>', `<style>${css}</style>`,
+          '<script src="node_modules/@babel/standalone/babel.min.js"><\/script>',
+	  '<script src="node_modules/react/umd/react.production.min.js"><\/script>',
+	  '<script src="node_modules/react-dom/umd/react-dom.production.min.js"><\/script>',
+          html,
+          (js ? `<script>${js}<\/script>` : ''),
+          (jsx ? `<script type="text/babel">${jsx}<\/script>` : '')
+      ].join`\n`
       parent.appendChild(node)
       node.contentWindow.onload = () => {
           let cur = node.contentWindow.document.body.scrollHeight
