@@ -24,13 +24,14 @@ $(o)/node_modules/%: node_modules/%
 	cp $< $@
 
 ifeq ($(t),react)
-all: $(o)/node_modules/@babel/standalone/babel.min.js \
+deps := $(o)/node_modules/@babel/standalone/babel.min.js \
 	$(o)/node_modules/react/umd/react.production.min.js \
 	$(o)/node_modules/react-dom/umd/react-dom.production.min.js
 endif
+all: $(deps)
 
 .DELETE_ON_ERROR:
 mkdir = @mkdir -p $(dir $@)
 
-upload: $(o)/index.html
-	rsync -av --progress $< alex@sigwait.tk:'~/public_html/demo/misc/30-seconds-of-code/$(notdir $(o))/'
+upload: $(o)/index.html $(if $(deps),$(o)/node_modules)
+	rsync -av --progress $^ alex@sigwait.tk:'~/public_html/demo/misc/30-seconds-of-code/$(notdir $(o))/'
