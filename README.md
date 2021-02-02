@@ -1,6 +1,7 @@
 # An alternative interface to '30 seconds of code'
 
 * [css](http://sigwait.tk/~alex/demo/misc/30-seconds-of-code/css/)
+* [react](http://sigwait.tk/~alex/demo/misc/30-seconds-of-code/react/)
 * [javascript](http://sigwait.tk/~alex/demo/misc/30-seconds-of-code/js/)
 
 Why & how: http://gromnitsky.blogspot.com/2021/01/fixing-30-seconds-of-code.html
@@ -16,7 +17,9 @@ Why & how: http://gromnitsky.blogspot.com/2021/01/fixing-30-seconds-of-code.html
 
         $ git clone https://github.com/30-seconds/30-seconds-of-css
 
-2. Clone this repo, cd to it.
+2. Clone this repo, cd to it, fetch optional deps:
+
+        $ npm i
 
 3. Generate `_out/css/index.html`:
 
