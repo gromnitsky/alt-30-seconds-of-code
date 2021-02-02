@@ -176,15 +176,18 @@
   }
 
   function mk_list() {
-      let h2s = [...document.querySelectorAll('h2')].map( v => v.innerText)
+      let h2s = [...document.querySelectorAll('h2')].map( v => ({
+          id: v.parentElement.id,
+          name: v.innerText
+      }))
       return query => {
-          return query ? h2s.filter( v => v.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h2s
+          return query ? h2s.filter( v => v.name.toLowerCase().indexOf(query.toLowerCase()) !== -1) : h2s
       }
   }
 
   function render(list, filter) {
       document.querySelector('#toc__list').innerHTML = list(filter).map( v => {
-          return `<li><a href="#${v}">${v}</a></li>`
+          return `<li><a href="#${v.id}">${v.name}</a></li>`
       }).join`\n`
   }
 </script>

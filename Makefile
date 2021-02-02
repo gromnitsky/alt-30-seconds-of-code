@@ -7,12 +7,13 @@ all: $(o)/index.html
 
 $(o)/%.html: $(i)/%.md
 	$(mkdir)
-	echo '<article id="$(title)">' > $@
+	echo '<article id="$(id)">' > $@
 	echo '<h2>$(title)</h2>' >> $@
 	pandoc $< -t html --no-highlight >> $@
 	echo '</article>' >> $@
 
-title = $(notdir $(basename $<))
+id = $(notdir $(basename $<))
+title = $(shell ruby -ryaml -e 'puts YAML.load($$<)["title"]' $<)
 
 $(o)/index.html: template.html $(patsubst $(i)/%.md, $(o)/%.html, $(sort $(wildcard $(i)/*.md)))
 	cat $^ | erb date=`git -C $(dir $(i)) log -1 --format=%cI`  t=$(t) > $@
