@@ -51,7 +51,13 @@
   document.addEventListener('DOMContentLoaded', main)
 
   function main() {
-      if (template_type() === 'react') mk_previews()
+      if (template_type() !== 'js') {
+          let klasses = {
+              'css': PreviewCSS,
+              'react': PreviewReact,
+          }
+          mk_previews(klasses[template_type()])
+      }
       let list = mk_list()
       document.querySelector('#toc input').oninput = evt => {
           render(list, evt.target.value)
@@ -63,37 +69,57 @@
       return document.querySelector('meta[name="application-name"]').dataset.template
   }
 
-  function mk_previews() {
-      for (let article of document.querySelectorAll('article')) {
-          article.querySelector('h2').insertAdjacentHTML('afterend', '<button class="preview">Preview</button>\n<button class="codepen">CodePen</button><div class="preview" />')
+  class PreviewReact {
+      assets(article) {
+          let r = ['html', 'css', 'js', 'jsx'].map( v => {
+              return [...article.querySelectorAll(`pre.${v} > code`)]
+                  .map( v => v.textContent).join("\n").trim()
+          })
+          return { html: r[0], css: r[1], js: r[2], jsx: r[3] }
       }
 
-      let preview_handler = evt => {
-          let article = document.getElementById(evt.target.parentElement.id)
+      // overridable by children classes
+      iframe_srcdoc(html, css, js, jsx) {
+          let script = src => `<script src="${src}"><\/script>`
+          return [
+              '<!doctype html>',
+              (css ? `<style>${css}</style>` : ''),
+              script('node_modules/@babel/standalone/babel.min.js'),
+              script('node_modules/react/umd/react.production.min.js'),
+              script('node_modules/react-dom/umd/react-dom.production.min.js'),
+              (html || '<div id="root"></div>'),
+              (js ? `<script>${js}<\/script>` : ''),
+              (jsx ? `<script type="text/babel">${jsx}<\/script>` : '')
+          ]
+      }
+
+      iframe_inject(parent, {html, css, js, jsx}) {
+          let node = document.createElement('iframe')
+          node.srcdoc = this.iframe_srcdoc(html, css, js, jsx).join`\n`
+          parent.appendChild(node)
+          node.contentWindow.onload = () => { // resize
+              let cur = node.contentWindow.document.body.scrollHeight
+              if (cur > 150) node.height = cur + 16
+          }
+      }
+
+      preview_handler(evt) {
+          let article = this.article(evt)
           let preview = article.querySelector('div.preview')
           if (preview.childElementCount) { // has iframe
               preview.textContent = ''
               return
           }
-          inject_iframe(preview, page(article))
+          this.iframe_inject(preview, this.assets(article))
       }
-      let page = article => {
-          let r = ['html', 'css', 'js', 'jsx'].map( v => {
-              return [...article.querySelectorAll(`pre.${v} > code`)]
-                  .map( v => v.textContent).join`\n`
-          })
-          return { html: r[0] || '<div id="root"></div>', css: r[1], js: r[2], jsx: r[3] }
-      }
-      let codepen_handler = evt => {
-          let article = document.getElementById(evt.target.parentElement.id)
-          let payload = page(article)
-          payload.title = article.querySelector('h2').innerText
-          
-          payload.js_pre_processor = 'babel'
-          payload.js_external = 'https://unpkg.com/react@17/umd/react.development.js;https://unpkg.com/react-dom@17/umd/react-dom.development.js'
-          payload.js = [payload.js, payload.jsx].join`\n`
-          delete payload.jsx
 
+      article(evt) {
+          return document.getElementById(evt.target.parentElement.id)
+      }
+
+      codepen_handler(evt) {
+          let article = this.article(evt)
+          let payload = this.codepen_payload(article)
           let form = document.createElement('form')
           form.style.display = 'none'
           form.action = 'https://codepen.io/pen/define'
@@ -107,29 +133,45 @@
           form.remove()
       }
 
-      for (let btn of document.querySelectorAll('button.preview')) {
-          btn.onclick = preview_handler
-      }
-      for (let btn of document.querySelectorAll('button.codepen')) {
-          btn.onclick = codepen_handler
+      // overridable by children classes
+      codepen_payload(article) {
+          let r = this.assets(article)
+          r.html = r.html || '<div id="root"></div>'
+          r.title = article.querySelector('h2').innerText
+          r.js_pre_processor = 'babel' // includes jsx plugin
+          r.js_external = ['https://unpkg.com/react@17/umd/react.development.js', 'https://unpkg.com/react-dom@17/umd/react-dom.development.js'].join`;`
+          r.js = [r.js, r.jsx].join`\n`
+          delete r.jsx
+          return r
       }
   }
 
-  function inject_iframe(parent, {html, css, js, jsx}) {
-      let node = document.createElement('iframe')
-      node.srcdoc = [
-          '<!doctype html>', `<style>${css}</style>`,
-          '<script src="node_modules/@babel/standalone/babel.min.js"><\/script>',
-	  '<script src="node_modules/react/umd/react.production.min.js"><\/script>',
-	  '<script src="node_modules/react-dom/umd/react-dom.production.min.js"><\/script>',
-          html,
-          (js ? `<script>${js}<\/script>` : ''),
-          (jsx ? `<script type="text/babel">${jsx}<\/script>` : '')
-      ].join`\n`
-      parent.appendChild(node)
-      node.contentWindow.onload = () => {
-          let cur = node.contentWindow.document.body.scrollHeight
-          if (cur > 150) node.height = cur + 16
+  class PreviewCSS extends PreviewReact {
+      iframe_srcdoc(html, css, js, jsx) {
+          return [
+              '<!doctype html>', `<style>${css}</style>`, html,
+              (js ? `<script>${js}<\/script>` : '')
+          ]
+      }
+      codepen_payload(article) {
+          let r = this.assets(article)
+          r.title = article.querySelector('h2').innerText
+          delete r.jsx
+          return r
+      }
+  }
+
+  function mk_previews(klass) {
+      for (let article of document.querySelectorAll('article')) {
+          article.querySelector('h2').insertAdjacentHTML('afterend', '<button class="preview">Preview</button>\n<button class="codepen">CodePen</button><div class="preview" />')
+      }
+
+      let preview = new klass()
+      for (let btn of document.querySelectorAll('button.preview')) {
+          btn.onclick = preview.preview_handler.bind(preview)
+      }
+      for (let btn of document.querySelectorAll('button.codepen')) {
+          btn.onclick = preview.codepen_handler.bind(preview)
       }
   }
 
