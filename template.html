@@ -51,13 +51,9 @@
   document.addEventListener('DOMContentLoaded', main)
 
   function main() {
-      if (template_type() !== 'js') {
-          let klasses = {
-              'css': PreviewCSS,
-              'react': PreviewReact,
-          }
-          mk_previews(klasses[template_type()])
-      }
+      let tt = { 'css': PreviewCSS, 'react': PreviewReact }[template_type()]
+      if (tt) mk_previews(tt)
+
       let list = mk_list()
       document.querySelector('#toc input').oninput = evt => {
           render(list, evt.target.value)
@@ -94,12 +90,18 @@
       }
 
       iframe_inject(parent, {html, css, js, jsx}) {
+          let progress = () => {
+              let s = parent.parentElement.querySelector('progress').style
+              s.display = s.display === 'none' ? 'inline-block' : 'none'
+          }
+          progress(parent)
           let node = document.createElement('iframe')
           node.srcdoc = this.iframe_srcdoc(html, css, js, jsx).join`\n`
           parent.appendChild(node)
           node.contentWindow.onload = () => { // resize
               let cur = node.contentWindow.document.body.scrollHeight
               if (cur > 150) node.height = cur + 16
+              progress(parent)
           }
       }
 
@@ -163,7 +165,7 @@
 
   function mk_previews(klass) {
       for (let article of document.querySelectorAll('article')) {
-          article.querySelector('h2').insertAdjacentHTML('afterend', '<button class="preview">Preview</button>\n<button class="codepen">CodePen</button><div class="preview" />')
+          article.querySelector('h2').insertAdjacentHTML('afterend', '<button class="preview">Preview</button>\n<button class="codepen">CodePen</button>\n<progress style="display: none"></progress><div class="preview" />')
       }
 
       let preview = new klass()
