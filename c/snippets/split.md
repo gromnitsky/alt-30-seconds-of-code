@@ -24,10 +24,10 @@ char **split(char *pattern, char *s);
 char *replace(char *pattern, char *options, char *s, char *replacement);
 ```
 
-* `pattern` is a regex;
-* `s` is a string to operate on;
-* `options` is a combination of `i`, `m`, `g` flags;
-* `replacement` a string that replace a matched substring specified by
+* `pattern`: a regex;
+* `s`: a string to operate on;
+* `options`: a combination of `i`, `m`, `g` flags;
+* `replacement`: a string that replace a matched substring specified by
   `pattern`.
 
 Both functions return malloc'ed values that should be freed. `split()`
@@ -40,7 +40,8 @@ replace(" ", NULL, "abc def ghi", "_") // "abc_def ghi"
 replace(" ", "g", "abc def ghi", "_") // "abc_def_ghi"
 ```
 
-The snipped uses [slice](#slice) & join.
+The snipped uses [slice](#slice) & [join](#join). To print the results
+of `slice()`, see [list_print](#list_print).
 
 ~~~
 #include <regex.h>

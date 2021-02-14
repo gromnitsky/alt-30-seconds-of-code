@@ -10,9 +10,9 @@ the original string.
 char* slice(char *s, int begin, int end);
 ```
 
-* `s` a string to operate on;
-* `begin` a 0-based index at which to begin extraction;
-* `end` a 0-based index *before* which to end extraction. The char at
+* `s`: a string to operate on;
+* `begin`: a 0-based index at which to begin extraction;
+* `end`: a 0-based index *before* which to end extraction. The char at
   this index isn't included.
 
 ```c

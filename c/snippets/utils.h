@@ -10,6 +10,8 @@
 
 #include <libgen.h>
 
+#include "list_print.c"
+
 void __my_assert(const char *assertion, const char *file,
                  unsigned int line, const char *function) {
   fprintf(stderr, "%s:%d: %s: Assertion `%s' failed.\n",
@@ -46,15 +48,6 @@ void __my_test_streq(char *actual, char *expected,
   ansi_color(red, 31, "FAILED");
   fprintf(stderr, "%s:\ngot `%s`\nexp `%s`\n", red, actual, expected);
   exit(1);
-}
-
-void list_print(char **list) {
-  if (!list) { fprintf(stderr, "(null)\n"); return; }
-  int idx = 0;
-  for (char **p = list; *p; *p++, idx++) {
-    fprintf(stderr, "%s\"%s\"%s", idx > 0 ? ", " : "[", *p, *(p+1) == NULL ? "]\n" : "");
-  }
-  if (!idx) fprintf(stderr, "[]\n");
 }
 
 int list_len(char **list) {
