@@ -13,7 +13,7 @@ a specified separator string.
 * `separator`: a string to separate each pair of adjacent elements of
   the array.
 
-The result is malloc'ed & should can be freed.
+The result is malloc'ed & should be freed.
 
 ```c
 typedef char *list[];
