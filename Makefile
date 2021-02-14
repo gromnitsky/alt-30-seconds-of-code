@@ -9,7 +9,7 @@ $(o)/%.html: $(i)/%.md
 	$(mkdir)
 	echo '<article id="$(id)">' > $@
 	echo '<h2>$(title)</h2>' >> $@
-	pandoc $< -t html --no-highlight >> $@
+	cd $(dir $<) && erb -r $(CURDIR)/lib.rb  $(notdir $<) | pandoc -t html --no-highlight >> $(CURDIR)/$@
 	echo '</article>' >> $@
 
 id = $(notdir $(basename $<))
@@ -30,6 +30,7 @@ deps := $(o)/node_modules/@babel/standalone/babel.min.js \
 endif
 all: $(deps)
 
+SHELL := bash -o pipefail
 .DELETE_ON_ERROR:
 mkdir = @mkdir -p $(dir $@)
 
