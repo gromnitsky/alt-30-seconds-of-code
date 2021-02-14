@@ -32,6 +32,7 @@ char* uuid() {
   return r;
 }
 
+// no seeding is req
 char *randstr2(int len) {
   if (!len || len < 2) len = 32;
 
