@@ -5,8 +5,8 @@ title: bin2hex
 Converts a "binary" string to a hex-looking string. The same as
 
 ~~~
-$ echo d0bfd0bed180d0bed0b1d0bbd0b5d0bdd0be | xxd -r -p
-пороблено
+$ echo пороблено | xxd -p
+d0bfd0bed180d0bed0b1d0bbd0b5d0bdd0be0a
 ~~~
 
 in shell.
