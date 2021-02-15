@@ -1,10 +1,6 @@
-#include <stdlib.h>
 #include <time.h>
-#include <string.h>
-#include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <err.h>
 
 #include "utils.h"
 #include "regex_test.c"

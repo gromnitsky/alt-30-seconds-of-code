@@ -11,8 +11,7 @@ char** list_realloc(char **list, int idx, int *size) {
     if (idx < *size - 1) return list; // no need to realloc
     *size = idx * 2;
   }
-  char **r = (char**)realloc(list, (*size) * sizeof(char*));
-  if (!r) err(1, "realloc failed");
+  char **r = (char**)realloc(list, (*size) * sizeof(char*)); assert(r);
   return r;
 }
 
