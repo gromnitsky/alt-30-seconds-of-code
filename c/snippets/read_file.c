@@ -29,7 +29,7 @@ LargeFile read_file(char *name) {
   char *buf = (char*)malloc(bufsiz);
   char *bufp = buf;
   char tmp[BUFSIZ];
-  for (int lastread = 0; (lastread = read(fd, tmp, BUFSIZ)); ) {
+  for (int lastread = 0; (lastread = read(fd, tmp, BUFSIZ)) > 0; ) {
     //printf("bufsiz=%d, lastread=%d, r.size=%d\n", bufsiz, lastread, r.size);
     if (r.size + lastread >= bufsiz - 1) {
       bufsiz *= 2;
