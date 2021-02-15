@@ -8,10 +8,10 @@ table that cannot be changed afterwards. There is no way to properly
 empty the table or get a list of its elements.
 
 POSIX also has `tsearch()` & co. for manipulating a tree (Red-Black or
-AVL, depending on a libc implementation). It has a more usefull
+AVL, depending on a libc implementation). It has a more useful
 interface--the user don't need to worry about a tree size, can delete
 individual entries & clean up the whole tree. Nevertheless I still
-find it fairly brittle & curbersome.
+find it fairly brittle & cumbersome.
 
 For example, memory management is terrifically complex: if, when
 adding an entry to a tree you do it twice with the same key, it'll
@@ -43,9 +43,9 @@ Anyway, this snippet provides an example of using as `tsearch()` as if
 it was a hash table routine:
 
 1. It adds a bunch of words (from a 17th-century English ballad) to a
-   tree (each word is a key, its number of occurencies is a value).
+   tree (each word is a key, its number of occurrences is a value).
 2. Then it deletes 2 entries from the tree.
-3. Then it destroys the tree compleatly.
+3. Then it destroys the tree completely.
 
 This is the array of words:
 
@@ -79,7 +79,7 @@ This is what you get after running the snippet:
 2 town
 ~~~
 
-Our data structure, a comparator & an allocator for new entry:
+Our data structure, a comparator & an allocator for a new entry:
 
 ```c
 <%= lines 'tsearch.c', '#include "utils.h"', '// for twalk' %>
