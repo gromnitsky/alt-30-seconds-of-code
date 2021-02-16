@@ -18,8 +18,27 @@ char* trim(const char *s) {
   return copy;
 }
 
+char* trim2(char s[]) {
+  if (!s) return "";
+  int start = nonspace(s, 1), size = strlen(s), len = 0;
+  if (start != size) len = size - start - nonspace(s, -1);
+  memmove(s, s+start, len);
+  s[len] = '\0';
+  return s;
+}
+
 void trim() {
   test_streq(trim(NULL), "");
   test_streq(trim(""), "");
   test_streq(trim("  qwerty   "), "qwerty");
+
+  char s[] = "  foo \n"; test_streq(trim2(s), "foo");
+  strcpy(s, ""); test_streq(trim2(s), "");
+  strcpy(s, "  foo"); test_streq(trim2(s), "foo");
+  strcpy(s, "foo"); test_streq(trim2(s), "foo");
+
+  char *m = (char*)malloc(10);
+  strcpy(m, "  foo ");
+  test_streq(trim2(m), "foo");
+  test_streq(m, "foo");
 }
