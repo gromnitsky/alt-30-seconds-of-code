@@ -7,7 +7,7 @@ Reads contents of a file into a string.
 ```c
 LargeFile read_file(char *name);
 
-<%= lines 'read_file.c', '#include <fcntl.h>', 'LargeFile read_file\(char \*name\) {' %>
+<%= lines 'read_file.c', '#include <fcntl.h>', 'char\* _read_file\(int fd, int \*len\) {' %>
 ```
 
 * `name`: a file name or "-" for stdin.

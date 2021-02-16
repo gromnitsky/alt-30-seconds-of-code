@@ -12,6 +12,29 @@ typedef struct {
   char *data;
 } LargeFile;
 
+char* _read_file(int fd, int *len) {
+  *len = 0;
+  int bufsiz = BUFSIZ;
+  char *buf = (char*)malloc(bufsiz);
+  char *bufp = buf;
+  char tmp[BUFSIZ];
+  for (int lastread = 0; (lastread = read(fd, tmp, BUFSIZ)) > 0; ) {
+    //printf("bufsiz=%d, lastread=%d, r.size=%d\n", bufsiz, lastread, r.size);
+    if (*len + lastread >= bufsiz - 1) {
+      bufsiz *= 2;
+      //printf("* realloc bufsiz=%d\n", bufsiz);
+      buf = (char*)realloc(buf, bufsiz); assert(buf);
+      bufp = buf + *len;
+    }
+    *len += lastread;
+    memcpy(bufp, tmp, lastread);
+    bufp += lastread;
+  }
+  buf = (char*)realloc(buf, *len + 1); assert(buf);
+  buf[*len] = '\0';
+  return buf;
+}
+
 LargeFile read_file(char *name) {
   LargeFile r = { .size = -1 };
   if (!name) return r;
@@ -24,29 +47,9 @@ LargeFile read_file(char *name) {
   }
   snprintf(r.name, sizeof(r.name), "%s", name);
 
-  r.size = 0;
-  int bufsiz = BUFSIZ;
-  char *buf = (char*)malloc(bufsiz);
-  char *bufp = buf;
-  char tmp[BUFSIZ];
-  for (int lastread = 0; (lastread = read(fd, tmp, BUFSIZ)) > 0; ) {
-    //printf("bufsiz=%d, lastread=%d, r.size=%d\n", bufsiz, lastread, r.size);
-    if (r.size + lastread >= bufsiz - 1) {
-      bufsiz *= 2;
-      //printf("* realloc bufsiz=%d\n", bufsiz);
-      buf = (char*)realloc(buf, bufsiz); assert(buf);
-      bufp = buf + r.size;
-    }
-    r.size += lastread;
-    memcpy(bufp, tmp, lastread);
-    bufp += lastread;
-  }
+  char *data = _read_file(fd, &r.size);
   if (fd) close(fd);
-
-  buf = (char*)realloc(buf, r.size + 1); assert(buf);
-  buf[r.size] = '\0';
-
-  r.data = buf;
+  r.data = data;
   return r;
 }
 
