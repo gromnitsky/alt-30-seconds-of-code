@@ -28,5 +28,5 @@ bin2hex("пороблено", strlen("пороблено")) // "d0bfd0bed180d0be
 ```
 
 ```c
-<%= lines 'hex.c', '#include "utils.h"', 'char\* hex2bin\(char \*s\) {' %>
+<%= lines 'hex.c', '#include "utils.h"', 'typedef struct {' %>
 ```
