@@ -13,7 +13,7 @@ $(o)/%.html: $(i)/%.md
 	echo '</article>' >> $@
 
 id = $(notdir $(basename $<))
-title = $(shell ruby -ryaml -e 'puts YAML.load($$<)["title"]' $<)
+title = $(shell awk '/^---/ {n++} {print $$0; if (n>1) exit(0)}' $< | js-yaml | json 0 | json title)
 
 $(o)/index.html: template.html $(patsubst $(i)/%.md, $(o)/%.html, $(sort $(wildcard $(i)/*.md)))
 	cat $^ | erb date=`git -C $(dir $(i)) log -1 --format=%cI`  t=$(t) > $@

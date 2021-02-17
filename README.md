@@ -14,6 +14,7 @@ Why & how: http://gromnitsky.blogspot.com/2021/01/fixing-30-seconds-of-code.html
 
 * pandoc
 * ruby
+* `npm i -g js-yaml`
 
 ## Compilation
 
