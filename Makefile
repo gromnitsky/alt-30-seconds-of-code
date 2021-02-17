@@ -8,7 +8,7 @@ all: $(o)/index.html
 $(o)/%.html: $(i)/%.md
 	$(mkdir)
 	echo '<article id="$(id)">' > $@
-	echo '<h2>$(title)</h2>' >> $@
+	$(if $(title),echo '<h2>$(title)</h2>' >> $@)
 	cd $(dir $<) && erb -r $(CURDIR)/lib.rb  $(notdir $<) | pandoc -t html --no-highlight >> $(CURDIR)/$@
 	echo '</article>' >> $@
 
