@@ -35,4 +35,4 @@ SHELL := bash -o pipefail
 mkdir = @mkdir -p $(dir $@)
 
 upload: $(o)/index.html $(if $(deps),$(o)/node_modules)
-	rsync -av --progress $^ alex@sigwait.tk:'~/public_html/demo/misc/30-seconds-of-code/$(notdir $(o))/'
+	rsync -av --progress $^ gromnitsky@web.sourceforge.net:/home/user-web/gromnitsky/htdocs/articles/alt30soc/$(notdir $(o))/

@@ -1,8 +1,12 @@
 # An alternative interface to '30 seconds of code'
 
-* [css](http://sigwait.tk/~alex/demo/misc/30-seconds-of-code/css/)
-* [react](http://sigwait.tk/~alex/demo/misc/30-seconds-of-code/react/)
-* [javascript](http://sigwait.tk/~alex/demo/misc/30-seconds-of-code/js/)
+* [css](http://gromnitsky.users.sourceforge.net/articles/alt30soc/css/)
+* [react](http://gromnitsky.users.sourceforge.net/articles/alt30soc/react/)
+* [javascript](http://gromnitsky.users.sourceforge.net/articles/alt30soc/js/)
+
+Snippets from this repo:
+
+* [Plain C](http://gromnitsky.users.sourceforge.net/articles/alt30soc/c/)
 
 Why & how: http://gromnitsky.blogspot.com/2021/01/fixing-30-seconds-of-code.html
 
