@@ -1,11 +1,10 @@
 ---
-title: Hash table
+title: POSIX Hash table
 ---
 
 POSIX has `hsearch()` function for manipulating a hash table, but it's
-pretty useless for a user is required to provide a fixed size for the
-table that cannot be changed afterwards. There is no way to properly
-empty the table or get a list of its elements.
+pretty useless for its items cannot be iterated and its length cannot
+be queried.
 
 POSIX also has `tsearch()` & co. for manipulating a tree (Red-Black or
 AVL, depending on a libc implementation). It has a more useful

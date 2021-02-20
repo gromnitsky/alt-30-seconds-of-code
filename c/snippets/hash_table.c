@@ -3,13 +3,13 @@
 typedef struct HTItem {
   char *key;
   void *val;
-  HTItem *next;
+  HTItem *next; // private
 } HTItem;
 
 typedef struct {
   HTItem **buckets;
   int buckets_len;
-  void (*item_val_free)(void*);
+  void (*item_val_free)(void*); // private
 } HashTable;
 
 HashTable* mk_hash_table(int buckets_len, void (*item_val_free)(void*)) {
@@ -119,9 +119,9 @@ void ht_walk(HashTable* h, void (*callback)(HTItem *, void *), void *data) {
 
 void _ht_total(HTItem *_, void *data) { int *n = (int*)data; (*n)++; }
 
-int ht_total(HashTable *ht) {
+int ht_total(HashTable *h) {
   int len = 0;
-  ht_walk(ht, _ht_total, &len);
+  ht_walk(h, _ht_total, &len);
   return len;
 }
 
@@ -135,13 +135,13 @@ void _ht_keys(HTItem *item, void *data) {
   hk->keys[hk->idx++] = item->key;
 }
 
-char **ht_keys(HashTable *ht) {
-  int len = ht_total(ht);
+char **ht_keys(HashTable *h) {
+  int len = ht_total(h);
   if (!len) return NULL;
 
   _HTKeys r = { .idx = 0 };
   r.keys = (char**)malloc((len+1)*sizeof(char*));
-  ht_walk(ht, _ht_keys, &r);
+  ht_walk(h, _ht_keys, &r);
   r.keys[len] = NULL;
   return r.keys;
 }
@@ -158,8 +158,6 @@ Counter* mk_word() {
   return w;
 }
 
-void val_free(void *obj) { free(obj); }
-
 void words_print(HTItem *item, void *_) {
   printf("%d %s\n", ((Counter*)(item->val))->count, item->key);
 }
@@ -169,7 +167,7 @@ void hash_table() {
     "bad news is come to town, my love is marry'd";
   char **words = split("[ ,]+", input);
 
-  HashTable *ht = mk_hash_table(42, val_free);
+  HashTable *ht = mk_hash_table(42, free);
   for (char **key = words; *key; *key++) {
     HTItem *item = ht_find(ht, *key);
     if (item) {
