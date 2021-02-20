@@ -107,12 +107,44 @@ void ht_free(HashTable** ht, void (*val_free_callback)(void*)) {
   *ht = NULL;
 }
 
-void ht_walk(HashTable* ht, void (*callback)(Item *item)) {
+void ht_walk(HashTable* ht, void (*callback)(Item *, void *),
+             void *data) {
   assert(callback);
   for (int idx = 0; idx < ht->buckets_len; idx++) {
-    for (Item *item = ht->buckets[idx]; item; item = item->next) callback(item);
+    for (Item *item = ht->buckets[idx]; item; item = item->next)
+      callback(item, data);
   }
 }
+
+void _ht_total(Item *_, void *data) { int *n = (int*)data; (*n)++; }
+
+int ht_total(HashTable *ht) {
+  int len = 0;
+  ht_walk(ht, _ht_total, &len);
+  return len;
+}
+
+typedef struct {
+  char **keys;
+  int idx;
+} _HT_Keys;
+
+void _ht_keys(Item *item, void *data) {
+  _HT_Keys *hk = (_HT_Keys*)data;
+  hk->keys[hk->idx++] = item->key;
+}
+
+char **ht_keys(HashTable *ht) {
+  int len = ht_total(ht);
+  if (!len) return NULL;
+
+  _HT_Keys hk = { .idx = 0 };
+  hk.keys = (char**)malloc((len+1)*sizeof(char*));
+  ht_walk(ht, _ht_keys, &hk);
+  hk.keys[len] = NULL;
+  return hk.keys;
+}
+
 
 // main
 typedef struct {
@@ -129,7 +161,7 @@ void val_free(void *obj) {
   free(obj);
 }
 
-void print_words(Item *item) {
+void words_print(Item *item, void *_) {
   printf("%d %s\n", ((Counter*)(item->val))->count, item->key);
 }
 
@@ -154,19 +186,20 @@ void hash_table() {
   ht_print(ht);
 
   puts("");
-  ht_walk(ht, print_words);
+  ht_walk(ht, words_print, NULL);
+  printf("total = %d\n", ht_total(ht));
+  list_print(ht_keys(ht));
 
   ht_rm(ht, val_free, "my");
   ht_rm(ht, val_free, "bad");
   ht_rm(ht, val_free, "news");
   ht_rm(ht, val_free, "no such key");
   puts("");
-  ht_walk(ht, print_words);
+  ht_walk(ht, words_print, NULL);
 
   puts("");
   ht_print(ht);
 
   ht_free(&ht, val_free);
   assert(NULL == ht);
-  ht_print(ht); // prints nothing
 }
