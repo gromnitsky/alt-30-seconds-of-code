@@ -7,69 +7,79 @@ typedef struct Item {
   Item *next;
 } Item;
 
-const int BUCKETS_LEN = 42;
-Item *buckets[BUCKETS_LEN];
+typedef struct {
+  Item **buckets;
+  int buckets_len;
+} HashTable;
 
-unsigned int hash(char *key) {
+HashTable* mk_hash_table(int buckets_len) {
+  HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
+  ht->buckets_len = buckets_len;
+  ht->buckets = (Item**)calloc(ht->buckets_len, sizeof(Item*));
+  return ht;
+}
+
+unsigned int ht_hash(HashTable* ht, char *key) {
   if (!key) key = "";
   unsigned char h = 0;
   for (unsigned char *p = (unsigned char*)key; *p; p++)
     h = 31*h + *p;
-  return h & BUCKETS_LEN;
+  return h & ht->buckets_len;
 }
 
-Item* find(Item **buckets, char *key) {
+Item* ht_find(HashTable* ht, char *key) {
   if (!key) return NULL;
-  int idx = hash(key);
-  for (Item *item = buckets[idx]; item; item = item->next) {
+  int idx = ht_hash(ht, key);
+  for (Item *item = ht->buckets[idx]; item; item = item->next) {
     if (0 == strcmp(key, item->key)) return item;
   }
   return NULL;
 }
 
-void add(Item **buckets, void (*val_free_callback)(void*),
-         char *key, void *val) {
+void ht_add(HashTable* ht, void (*val_free_callback)(void*),
+            char *key, void *val) {
   assert(val_free_callback);
-  Item *item = find(buckets, key);
+  Item *item = ht_find(ht, key);
   if (item) { // update existing value
     val_free_callback(item->val);
     item->val = val;
     return;
   }
 
-  int idx = hash(key);
+  int idx = ht_hash(ht, key);
   item = (Item*)malloc(sizeof(Item));
   item->key = strdup(key);
   item->val = val;
-  item->next = buckets[idx]; // injecting in front of existing ones
-  buckets[idx] = item;
+  item->next = ht->buckets[idx]; // injecting in front of existing ones
+  ht->buckets[idx] = item;
 }
 
-void print(Item **buckets) {
-  for (int idx = 0; idx < BUCKETS_LEN; idx++) {
-    if (!buckets[idx]) continue; // don't print an empty bucket
+void ht_print(HashTable* ht) {
+  if (!ht) return;
+  for (int idx = 0; idx < ht->buckets_len; idx++) {
+    if (!ht->buckets[idx]) continue; // don't print an empty bucket
     printf("%2d: ", idx);
 
     int first = 0;
-    for (Item *item = buckets[idx]; item; item = item->next) {
+    for (Item *item = ht->buckets[idx]; item; item = item->next) {
       printf("%s%s", first++ ? " -> " : "", item->key);
     }
     printf("\n");
   }
 }
 
-void rm(Item **buckets, void (*val_free_callback)(void*), char *key) {
+void ht_rm(HashTable* ht, void (*val_free_callback)(void*), char *key) {
   assert(val_free_callback);
-  if (!find(buckets, key)) return;
+  if (!ht_find(ht, key)) return;
 
-  for (int idx = 0; idx < BUCKETS_LEN; idx++) {
+  for (int idx = 0; idx < ht->buckets_len; idx++) {
     Item *prev = NULL;
-    for (Item *item = buckets[idx]; item; item = item->next) {
+    for (Item *item = ht->buckets[idx]; item; item = item->next) {
       if (0 == strcmp(item->key, key)) {
         if (prev) { // N: item1 -> WE_WERE_HERE -> item3
           prev->next = item->next;
         } else {    // N: WE_WERE_HERE -> item2
-          buckets[idx] = item->next;
+          ht->buckets[idx] = item->next;
         }
         free(item->key);
         val_free_callback(item->val);
@@ -81,26 +91,30 @@ void rm(Item **buckets, void (*val_free_callback)(void*), char *key) {
   }
 }
 
-void clean(Item **buckets, void (*val_free_callback)(void*)) {
+void ht_free(HashTable** ht, void (*val_free_callback)(void*)) {
   assert(val_free_callback);
-  for (int idx = 0; idx < BUCKETS_LEN; idx++) {
-    for (Item *item = buckets[idx]; item; item = item->next) {
+  for (int idx = 0; idx < (*ht)->buckets_len; idx++) {
+    for (Item *item = (*ht)->buckets[idx]; item; item = item->next) {
       free(item->key);
       val_free_callback(item->val);
       free(item);
     }
-    buckets[idx] = NULL;
+    (*ht)->buckets[idx] = NULL;
   }
+
+  free((*ht)->buckets);
+  free(*ht);
+  *ht = NULL;
 }
 
-void walk(Item **buckets, void (*callback)(Item *item)) {
+void ht_walk(HashTable* ht, void (*callback)(Item *item)) {
   assert(callback);
-  for (int idx = 0; idx < BUCKETS_LEN; idx++) {
-    for (Item *item = buckets[idx]; item; item = item->next) callback(item);
+  for (int idx = 0; idx < ht->buckets_len; idx++) {
+    for (Item *item = ht->buckets[idx]; item; item = item->next) callback(item);
   }
 }
 
-
+// main
 typedef struct {
   int count;
 } Counter;
@@ -123,35 +137,36 @@ void hash_table() {
   char *input = "bad news is come to town, bad news is carry'd, "
     "bad news is come to town, my love is marry'd";
   char **words = split("[ ,]+", input);
+
+  HashTable *ht = mk_hash_table(42);
   for (char **key = words; *key; *key++) {
-    Item *item = find(buckets, *key);
+    Item *item = ht_find(ht, *key);
     if (item) {
       ((Counter*)(item->val))->count++;
       continue;
     }
 
     Counter *val = mk_word();
-    add(buckets, val_free, *key, val);
+    ht_add(ht, val_free, *key, val);
   }
   free(words);
 
-  print(buckets);
+  ht_print(ht);
 
   puts("");
-  walk(buckets, print_words);
+  ht_walk(ht, print_words);
 
-  rm(buckets, val_free, "my");
-  rm(buckets, val_free, "bad");
-  rm(buckets, val_free, "news");
-  rm(buckets, val_free, "no such key");
+  ht_rm(ht, val_free, "my");
+  ht_rm(ht, val_free, "bad");
+  ht_rm(ht, val_free, "news");
+  ht_rm(ht, val_free, "no such key");
   puts("");
-  walk(buckets, print_words);
-
-  puts("");
-  print(buckets);
-
-  clean(buckets, val_free);
+  ht_walk(ht, print_words);
 
   puts("");
-  print(buckets);
+  ht_print(ht);
+
+  ht_free(&ht, val_free);
+  assert(NULL == ht);
+  ht_print(ht); // prints nothing
 }
