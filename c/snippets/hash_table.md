@@ -40,9 +40,8 @@ HT functions.
   for `HTItem->val`.
 
 Keys in a HT are always null-terminated strings that are *copied*
-inside the HT. Values must be `struct`s of some kind, for which you
-must dynamically allocate memory before adding a key-value pair to the
-HT.
+inside the HT. Values should be dynamically allocated before adding a
+key-value pair to the HT.
 
 If you add an entry with a key that already exists in a HT,
 `ht_add()` function automatically releases memory for the previous
@@ -109,10 +108,7 @@ total = 8
 
 The 1st & the last blocks are `ht_print()` (left column is a bucket
 number, right--linked lists; empty buckets are not shown). In the
-middle are examples of a callback to `ht_walk()`, `ht_total()` &
-`ht_keys()`.
-
-Prerequisites:
+middle there is an example of a callback to `ht_walk()`:
 
 ```c
 <%= lines 'hash_table.c', '// main', 'void hash_table\(\) {' %>
@@ -129,3 +125,7 @@ The API the code above uses:
 ```c
 <%= lines 'hash_table.c', '#include "split.c"', '// main' %>
 ```
+
+One way to enhance this would be moving `item_val_free` callback from
+`mk_hash_table()` to `ht_add()`--that way you may potentially have
+totally different types of `val`, all with a custom `free()` function.

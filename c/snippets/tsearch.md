@@ -1,5 +1,5 @@
 ---
-title: POSIX Hash table
+title: tsearch as a hash table
 ---
 
 POSIX has `hsearch()` function for manipulating a hash table, but it's

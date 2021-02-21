@@ -148,18 +148,8 @@ char **ht_keys(HashTable *h) {
 
 
 // main
-typedef struct {
-  int count;
-} Counter;
-
-Counter* mk_word() {
-  Counter *w = (Counter*)malloc(sizeof(Counter));
-  w->count = 1;
-  return w;
-}
-
 void words_print(HTItem *item, void *_) {
-  printf("%d %s\n", ((Counter*)(item->val))->count, item->key);
+  printf("%d %s\n", *(int*)item->val, item->key);
 }
 
 void hash_table() {
@@ -168,15 +158,14 @@ void hash_table() {
   char **words = split("[ ,]+", input);
 
   HashTable *ht = mk_hash_table(42, free);
-  for (char **key = words; *key; *key++) {
+  for (char **key = words; *key; key++) {
     HTItem *item = ht_find(ht, *key);
     if (item) {
-      ((Counter*)(item->val))->count++;
-      continue;
+      int *n = (int*)item->val; (*n)++; // inc the word counter
+    } else {
+      int *n = (int*)malloc(sizeof(int)); *n = 1;
+      ht_add(ht, *key, n);
     }
-
-    Counter *val = mk_word();
-    ht_add(ht, *key, val);
   }
   free(words);
 
