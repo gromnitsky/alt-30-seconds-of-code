@@ -10,7 +10,7 @@
 
 #include <libgen.h>
 
-#include "list_print.c"
+#include "str_vector_utils.c"
 
 void __my_assert(const char *assertion, const char *file,
                  unsigned int line, const char *function) {
@@ -48,13 +48,6 @@ void __my_test_streq(char *actual, char *expected,
   ansi_color(red, 31, "FAILED");
   fprintf(stderr, "%s:\ngot `%s`\nexp `%s`\n", red, actual, expected);
   exit(1);
-}
-
-int list_len(char **list) {
-  if (!list) return 0;
-  int len = 0;
-  for (char **p = list; *p; p++) len++;
-  return len;
 }
 
 void __my_test_listeq(char **actual, char **expected,

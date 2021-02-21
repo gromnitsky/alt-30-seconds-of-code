@@ -40,8 +40,9 @@ replace(" ", NULL, "abc def ghi", "_") // "abc_def ghi"
 replace(" ", "g", "abc def ghi", "_") // "abc_def_ghi"
 ```
 
-The snipped uses [slice](#slice) & [join](#join). To print the results
-of `slice()`, see [list_print](#list_print).
+The snipped uses [slice](#slice), [join](#join) &
+[list_free](#str_vector_utils). To print the results of `slice()`, see
+[list_print](#str_vector_utils).
 
 ~~~
 #include <regex.h>

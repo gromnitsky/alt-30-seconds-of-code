@@ -86,16 +86,10 @@ char **split(char *pattern, char *s) {
   return regex_match(pattern, NULL, s, NULL);
 }
 
-void list_free(char **list) {
-  if (!list) return;
-  for (char **p = list; *p; p++) free(*p);
-  free(list);
-}
-
 char *replace(char *pattern, char *options, char *s, char *replacement) {
   char **list = regex_match(pattern, options, s, replacement);
   char *r = join(list, "");
-  list_free(list);
+  list_free(&list);
   return r;
 }
 
