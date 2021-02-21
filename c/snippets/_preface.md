@@ -1,5 +1,5 @@
 ---
-title:
+title: ""
 ---
 
 Want to add/fix a snippet? Complain about the style? See the [github
