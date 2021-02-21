@@ -1,11 +1,11 @@
 ---
-title: shellescape
+title: shellquote
 ---
 
 Returns a shell-escaped version of a string.
 
 ```c
-char* shellescape(char *s);
+char* shellquote(char *s);
 ```
 
 * `s`: a string to operate on.
@@ -13,11 +13,11 @@ char* shellescape(char *s);
 The result is malloc’ed & should be freed.
 
 ~~~
-shellescape("foo'bar") // "'foo'\''bar'"
+shellquote("foo'bar") // "'foo'\''bar'"
 ~~~
 
 ```c
-<%= lines 'shellescape.c', '#include "utils.h"', 'void shellescape\(\) {' %>
+<%= lines 'shellquote.c', '#include "utils.h"', 'void shellquote\(\) {' %>
 ```
 
 You can also write a smaller version with [replace](#split):
