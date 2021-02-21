@@ -88,7 +88,7 @@ char **split(char *pattern, char *s) {
 
 void list_free(char **list) {
   if (!list) return;
-  for (char **p = list; *p; *p++) free(*p);
+  for (char **p = list; *p; p++) free(*p);
   free(list);
 }
 

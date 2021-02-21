@@ -6,7 +6,7 @@ char* join(char **list, const char *separator) {
   if (!list) return NULL;
 
   int len = 0, ilen = 0;
-  for (char **p = list; *p; *p++) {
+  for (char **p = list; *p; p++) {
     len++;                      // number of items in the list
     ilen += strlen(*p);         // sum of items length
   }

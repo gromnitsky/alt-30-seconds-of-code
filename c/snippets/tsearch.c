@@ -64,7 +64,7 @@ void tsearch() {
   char **words = split("[ ,]+", input);
 
   void *tree = NULL;
-  for (char **p = words; *p; *p++) {
+  for (char **p = words; *p; p++) {
     WC *entry = mk_entry(*p);
     void *r = tfind(entry, &tree, cmp);
     if (r) {

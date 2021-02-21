@@ -53,7 +53,7 @@ void __my_test_streq(char *actual, char *expected,
 int list_len(char **list) {
   if (!list) return 0;
   int len = 0;
-  for (char **p = list; *p; *p++) len++;
+  for (char **p = list; *p; p++) len++;
   return len;
 }
 
@@ -65,7 +65,7 @@ void __my_test_listeq(char **actual, char **expected,
     ok = false;
   } else {
     char **pa = actual, **pe = expected;
-    for (; *pa; *pa++, *pe++) {
+    for (; *pa; pa++, pe++) {
       if (0 != strcmp(*pa, *pe)) {
         ok = false;
         break;
