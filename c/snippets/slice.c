@@ -1,27 +1,50 @@
-// cling -Wno-writable-strings slice.c
-// -*-c++-*-
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include "utils.h"
+
+typedef struct {
+  int begin;
+  int size;
+} _SliceRange;
+
+_SliceRange _slice_calc(int len, int begin, int end) {
+  _SliceRange r = { .begin = begin };
+  if (len < 0) len = 0;
+
+  if (r.begin < 0) r.begin = len + r.begin;
+  if (r.begin < 0) r.begin = 0;
+  if (end < 0) end = len + end;
+  if (end >= len) end = len;
+
+  if (r.begin >= end) r.begin = end = 0;
+
+  r.size = end - r.begin;
+  return r;
+}
 
 char* slice(char *s, int begin, int end) {
   if (!s) return NULL;
   int len = strlen(s);
-  if (begin < 0) begin = len + begin;
-  if (begin < 0) begin = 0;
-  if (end < 0) end = len + end;
-  if (end >= len) end = len;
 
-  if (begin >= end) begin = end = 0;
+  _SliceRange range = _slice_calc(len, begin, end);
 
-  int size = end - begin;
-  //printf("`%s`, begin=%d, end=%d, size=%d, len=%d\n", s, begin, end, size, len);
-  char *r = (char*)malloc(size + 1);
-  memcpy(r, s+begin, size);
-  r[size] = '\0';
+  char *r = (char*)malloc(range.size + 1);
+  memcpy(r, s+range.begin, range.size);
+  r[range.size] = '\0';
+
+  return r;
+}
+
+char** list_slice(char **list, int begin, int end) {
+  if (!list) return NULL;
+  int len = list_len(list);
+
+  _SliceRange range = _slice_calc(len, begin, end);
+
+  char **r = (char**)malloc((range.size + 1)*sizeof(char*));
+  char **src = list+range.begin;
+  for (int idx = 0; idx < range.size; idx++) {
+    r[idx] = strdup(*src++);
+  }
+  r[range.size] = NULL;
 
   return r;
 }
@@ -47,4 +70,12 @@ void slice() {
   test_streq(slice("qwerty", 1, 1), "");
   test_streq(slice("qwerty", -1, -1), "");
   test_streq(slice("qwerty", 1, -1), "wert");
+
+  typedef char *list[];
+
+  char *v[] = {"q", "w", "e", "r", "t", "y", NULL};
+  test(list_slice(NULL, 1, 2) == NULL);
+  test_listeq(list_slice(v, 2, -1), ((list){"e", "r", "t", NULL}) );
+  test_listeq(list_slice(v, 10000, 10000), ((list){NULL}) );
+  test_listeq(list_slice(v, 1, -1), ((list){"w", "e", "r", "t", NULL}) );
 }
