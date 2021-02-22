@@ -20,3 +20,27 @@ void list_free(char ***v) {
   free(*v);
   *v = NULL;
 }
+
+char** list_scp(char **list) {
+  if (!list) return NULL;
+  int len = list_len(list);
+  char **r = (char**)malloc((len+1) * sizeof(char*));
+  char **src = list, **dest = r;
+  while (*src) *dest++ = *src++;
+  r[len] = NULL;
+  return r;
+}
+
+int list_cmp(const void *a, const void *b) {
+  return strcmp(*(char**)a, *(char**)b);
+}
+
+char** list_sort(char **list) {
+  if (!list) return NULL;
+  int len = list_len(list);
+  char **copy = list_scp(list);
+  if (len < 2) return copy;
+
+  qsort(copy, len, sizeof(char*), list_cmp);
+  return copy;
+}

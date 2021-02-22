@@ -18,7 +18,6 @@ The following header files are assumed as already included:
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <stdlib.h>
 ```
 
 <small>If you're looking at this from the phone, the TOC panel on the
