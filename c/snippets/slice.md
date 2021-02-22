@@ -21,7 +21,7 @@ char** list_slice(char **list, int begin, int end);
 
 Both functions return malloc'ed values that should be freed with
 
-* `slice()`: a regular free(3);
+* `slice()`: regular free(3);
 * `list_slice()`: [list_free](#str_vector_utils).
 
 

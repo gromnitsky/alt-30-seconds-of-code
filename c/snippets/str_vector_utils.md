@@ -36,12 +36,12 @@ freed with regular free(3), NOT with `list_free()`.
 [cling]$ list_free(&sorted)
 [cling]$ list_print(sorted)
 (null)
-[cling]$ list_print(orig) // garbage in output, "sorted" was a shallow copy
+[cling]$ list_print(orig) // garbage in array, "sorted" was a shallow copy
 ["Ҟ�", "���", "T��"]
 ```
 
-Used by many snippets, for example, [split](#split) or [Hash
-table](#hash_table).
+The utils are used by many snippets, for example, [split](#split),
+[Hash table](#hash_table) or [slice](#slice).
 
 ```c
 <%= File.read 'str_vector_utils.c' %>

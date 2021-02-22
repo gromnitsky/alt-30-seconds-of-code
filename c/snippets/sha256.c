@@ -5,7 +5,7 @@
 // tested with 1.1.1i
 #include <openssl/evp.h>
 
-typedef struct CryptoDigest {
+typedef struct {
   char *bindata;
   int len;
   // private

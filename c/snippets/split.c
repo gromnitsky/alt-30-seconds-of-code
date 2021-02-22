@@ -15,7 +15,7 @@ char** list_realloc(char **list, int idx, int *size) {
   return r;
 }
 
-typedef struct RegexOptions {
+typedef struct {
   bool all;
   int flags;
 } RegexOptions;
