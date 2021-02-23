@@ -1,7 +1,7 @@
 #include <regex.h>
 #include "utils.h"
 
-bool regex_test(char *pattern, char* s) {
+bool regex_test(const char *pattern, const char* s) {
   if ( !(pattern && s)) return false;
   int status;
   regex_t re;

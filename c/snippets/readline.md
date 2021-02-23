@@ -12,7 +12,7 @@ In the snippet below we replicate the 'awk' portion of the command:
 as
 
 ~~~
-$ ip route | cling -Wno-writable-strings readline.c
+$ ip route | cling readline.c
 172.16.207.0/24 -> 172.16.207.1
 172.16.222.0/24 -> 172.16.222.1
 ~~~

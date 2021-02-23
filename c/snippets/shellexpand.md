@@ -6,7 +6,7 @@ Expands shell variables, commands & splits a string into an array of
 tokens--all in the same way /bin/sh does.
 
 ```c
-char** shellexpand(char *s);
+char** shellexpand(const char *s);
 ```
 
 * `s`: a string to operate on.

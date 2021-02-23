@@ -1,4 +1,4 @@
-// cling -Wno-writable-strings -lbackticks.c -lcrypto
+// cling backticks.c -lcrypto
 #include "read_file.c"
 #include "trim.c"
 #include "utils.h"
@@ -9,7 +9,7 @@ typedef struct {
   int stdout_len;
 } Backticks;
 
-Backticks backticks(char* cmd) {
+Backticks backticks(const char* cmd) {
   Backticks r = { .exit_code = -1 };
   FILE *stream = popen(cmd, "r"); if (!stream) return r;
   fflush(stream);

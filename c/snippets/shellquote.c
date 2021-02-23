@@ -1,6 +1,6 @@
 #include "utils.h"
 
-char* shellquote(char *s) {
+char* shellquote(const char *s) {
   if (!s) s = "";
   char *r = (char*)malloc(strlen(s)*4 + 2 + 1);
   char *rp = r;
@@ -9,7 +9,7 @@ char* shellquote(char *s) {
   rp++;
 
   int len = 0;
-  for (char *p = s; *p; p++, len++) {
+  for (const char *p = s; *p; p++, len++) {
     if (*p == quote) {
       memcpy(rp, "'\\''", 4);
       len += 4;

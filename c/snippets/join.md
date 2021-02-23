@@ -6,7 +6,7 @@ An equivalent to JavaScript `Array.prototype.join()`: returns a new
 string by concatenating all of the elements in an array, separated by
 a specified separator string.
 
-    char* join(char **list, const char *separator)
+    char* join(const char **list, const char *separator)
 
 * `list`: a pointer to an array of character strings (char\*)
   terminated by NULL, e.g. `["foo", "bar", NULL]`;
@@ -16,10 +16,10 @@ a specified separator string.
 The result is malloc'ed & should be freed.
 
 ```c
-typedef char *list[];
+typedef const char *list[];
 
-join((list){ "An", "old", "maid", "of", "five", "&", "thirty",
-"eloped", "with", "a", "colonel", "of", "40", NULL}, " ") // "An old maid of five & thirty eloped with a colonel of 40"
+join((list){ "An", "old", "maid", "of", "5", "&", "30",
+"eloped", "with", "a", "colonel", "of", "40", NULL}, " ") // "An old maid of 5 & 30 eloped with a colonel of 40"
 
 join((list){"foo", NULL}, " ") // "foo"
 ```

@@ -5,7 +5,7 @@ title: shellquote
 Returns a shell-escaped version of a string.
 
 ```c
-char* shellquote(char *s);
+char* shellquote(const char *s);
 ```
 
 * `s`: a string to operate on.

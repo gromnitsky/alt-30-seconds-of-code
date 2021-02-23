@@ -15,9 +15,9 @@ example.
 <%= lines 'hash_table.c', '#include "split.c"', 'HashTable\* mk_hash_table\(int buckets_len, void \(\*item_val_free\)\(void\*\)\) {' %>
 
 HashTable* mk_hash_table(int buckets_len, void (*item_val_free)(void*));
-HTItem* ht_find(HashTable* h, char *key);
-void ht_add(HashTable* h, char *key, void *val);
-void ht_rm(HashTable* h, char *key);
+HTItem* ht_find(HashTable* h, const char *key);
+void ht_add(HashTable* h, const char *key, void *val);
+void ht_rm(HashTable* h, const char *key);
 void ht_free(HashTable** ht);
 int ht_total(HashTable *ht);
 char **ht_keys(HashTable *ht);

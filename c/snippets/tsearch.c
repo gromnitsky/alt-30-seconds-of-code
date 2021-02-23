@@ -1,9 +1,3 @@
-// Why not hsearch?
-//
-// hsearch is pretty useless because one must provide a fixed size for
-// the table (which cannot be increased). And there is no way to empty
-// the table.
-
 #include "split.c"
 #include "utils.h"
 
@@ -20,7 +14,7 @@ int cmp(const void *a, const void *b) {
   return strcmp(pa->word, pb->word);
 }
 
-WC *mk_entry(char *name) {
+WC *mk_entry(const char *name) {
   WC *d = (WC*)malloc(sizeof(WC));
   d->count = 1;
   snprintf(d->word, sizeof(d->word), "%s", name);
@@ -33,7 +27,7 @@ void entry_print(const void *nodep, VISIT v, int _) {
    if (v == postorder || v == leaf) printf("%d %s\n", wc->count, wc->word);
 }
 
-void trm(void **tree, char *key) {
+void trm(void **tree, const char *key) {
   WC *node = mk_entry(key);
   void *r = tfind(node, tree, cmp);
   if (r) {
@@ -59,7 +53,7 @@ void tfree(void **tree) {
 }
 
 void tsearch() {
-  char *input = "bad news is come to town, bad news is carry'd, "
+  const char *input = "bad news is come to town, bad news is carry'd, "
     "bad news is come to town, my love is marry'd";
   char **words = split("[ ,]+", input);
 

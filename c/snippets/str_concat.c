@@ -11,7 +11,7 @@ int args_len(va_list ap) {
   return len;
 }
 
-char* str_concat(char *args, ...) {
+char* str_concat(const char *args, ...) {
   va_list ap;
   va_start(ap, args);
   int len = args_len(ap); if (!len) return NULL;
@@ -19,13 +19,13 @@ char* str_concat(char *args, ...) {
 
   va_start(ap, args);
   for (int idx = 0; (args = va_arg(ap, char*)); idx++) {
-    list[idx] = args;
+    list[idx] = (char*)args;
     //printf("%d, %d: %s\n", len, idx, args);
   }
   list[len] = NULL;
   va_end(ap);
 
-  char *r = join(list, "");
+  char *r = join((const char**)list, "");
   free(list);
   return r;
 }

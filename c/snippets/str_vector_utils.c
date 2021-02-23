@@ -7,10 +7,10 @@ void list_print(char **list) {
   if (!idx) fprintf(stderr, "[]\n");
 }
 
-int list_len(char **list) {
+int list_len(const char **list) {
   if (!list) return 0;
   int len = 0;
-  for (char **p = list; *p; p++) len++;
+  for (const char **p = list; *p; p++) len++;
   return len;
 }
 
@@ -21,11 +21,11 @@ void list_free(char ***v) {
   *v = NULL;
 }
 
-char** list_scp(char **list) {
+char** list_scp(const char **list) {
   if (!list) return NULL;
   int len = list_len(list);
   char **r = (char**)malloc((len+1) * sizeof(char*));
-  char **src = list, **dest = r;
+  char **src = (char**)list, **dest = r;
   while (*src) *dest++ = *src++;
   r[len] = NULL;
   return r;
@@ -35,7 +35,7 @@ int list_cmp(const void *a, const void *b) {
   return strcmp(*(char**)a, *(char**)b);
 }
 
-char** list_sort(char **list) {
+char** list_sort(const char **list) {
   if (!list) return NULL;
   int len = list_len(list);
   char **copy = list_scp(list);

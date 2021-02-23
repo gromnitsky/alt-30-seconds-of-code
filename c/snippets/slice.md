@@ -8,8 +8,8 @@ section of a string/array & return it as a new string/array, without
 modifying the original object.
 
 ```c
-char* slice(char *s, int begin, int end);
-char** list_slice(char **list, int begin, int end);
+char* slice(const char *s, int begin, int end);
+char** list_slice(const char **list, int begin, int end);
 ```
 
 * `s`: a string to operate on;
@@ -30,7 +30,7 @@ slice("qwerty", 2, -1)  // "ert"
 slice("qwerty", -6, 1)  // "q"
 slice("qwerty", 0, 100) // "qwerty"
 
-char *v[] = {"q", "w", "e", "r", "t", "y", NULL};
+const char *v[] = {"q", "w", "e", "r", "t", "y", NULL};
 list_slice(v, 2, -1)    // ["e", "r", "t", NULL]
 ```
 

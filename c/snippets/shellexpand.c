@@ -1,7 +1,7 @@
 #include "utils.h"
 #include <wordexp.h>
 
-char** shellexpand(char *s) {
+char** shellexpand(const char *s) {
   if (!s) return NULL;
   wordexp_t r;
   int status;
@@ -13,7 +13,7 @@ char** shellexpand(char *s) {
 }
 
 void shellexpand() {
-  typedef char *list[];
+  typedef const char *list[];
 
   test(shellexpand(NULL) == NULL);
   test_listeq(shellexpand(""), ((list){NULL}));

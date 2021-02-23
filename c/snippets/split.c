@@ -1,12 +1,10 @@
-// cling -Wno-writable-strings split.c
-
 #include <regex.h>
 #include "utils.h"
 
 #include "slice.c"
 #include "join.c"
 
-char** list_realloc(char **list, int idx, int *size) {
+char** _list_realloc(char **list, int idx, int *size) {
   if (list) {
     if (idx < *size - 1) return list; // no need to realloc
     *size = idx * 2;
@@ -20,7 +18,7 @@ typedef struct {
   int flags;
 } RegexOptions;
 
-RegexOptions regex_options_parse(char *spec) {
+RegexOptions regex_options_parse(const char *spec) {
   if (!spec) spec = "";
   RegexOptions opt = { false, REG_EXTENDED };
   if (strstr(spec, "i")) opt.flags |= REG_ICASE;
@@ -29,7 +27,8 @@ RegexOptions regex_options_parse(char *spec) {
   return opt;
 }
 
-char **regex_match(char *pattern, char *options, char *s, char *replacement) {
+char **regex_match(const char *pattern, const char *options,
+                   const char *s, const char *replacement) {
   if (!s) return NULL;
   if (!pattern) pattern = "";
   RegexOptions opt = regex_options_parse(options);
@@ -38,12 +37,12 @@ char **regex_match(char *pattern, char *options, char *s, char *replacement) {
   if (0 != regcomp(&re, pattern, opt.flags)) return NULL; // invalid RE
 
   regmatch_t pm;
-  char *p = s;
+  const char *p = s;
   char **result = NULL;
   int error, idx = 0, flags = 0, len = strlen(s), result_size = 3,
     step = 0, replacement_count = 0, circumflex, fugazy;
   do {
-    result = list_realloc(result, idx, &result_size);
+    result = _list_realloc(result, idx, &result_size);
 
     p = p + step;
     error = regexec(&re, p, 1, &pm, idx > 0 ? REG_NOTBOL : 0);
@@ -57,7 +56,7 @@ char **regex_match(char *pattern, char *options, char *s, char *replacement) {
         step = end = 1;
       }
       if (idx == 0 && replacement && !error) { // inject matched substring
-        result = list_realloc(result, idx, &result_size);
+        result = _list_realloc(result, idx, &result_size);
         result[idx++] = strdup(replacement);
         replacement_count++;
       }
@@ -68,7 +67,7 @@ char **regex_match(char *pattern, char *options, char *s, char *replacement) {
     if ( !(error && fugazy)) result[idx++] = data;
 
     if (replacement && !error && !circumflex) { // inject matched substring
-      result = list_realloc(result, idx, &result_size);
+      result = _list_realloc(result, idx, &result_size);
       if (opt.all || replacement_count++ == 0) {
         result[idx++] = strdup(replacement);
       } else {
@@ -82,19 +81,20 @@ char **regex_match(char *pattern, char *options, char *s, char *replacement) {
   return result;
 }
 
-char **split(char *pattern, char *s) {
+char **split(const char *pattern, const char *s) {
   return regex_match(pattern, NULL, s, NULL);
 }
 
-char *replace(char *pattern, char *options, char *s, char *replacement) {
+char *replace(const char *pattern, const char *options,
+              const char *s, const char *replacement) {
   char **list = regex_match(pattern, options, s, replacement);
-  char *r = join(list, "");
+  char *r = join((const char**)list, "");
   list_free(&list);
   return r;
 }
 
 void split() {
-  typedef char *list[];
+  typedef const char *list[];
 
   test_listeq(split("&", "An old maid of five & thirty eloped with a colonel of forty"), ((list){"An old maid of five ", " thirty eloped with a colonel of forty", NULL}));
   test_listeq(split(" ", "abc def ghi"), ((list){"abc", "def", "ghi", NULL}));

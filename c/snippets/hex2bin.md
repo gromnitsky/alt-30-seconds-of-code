@@ -5,9 +5,9 @@ title: hex2bin
 Converts a hex-looking string to a byte-array terminated with NULL.
 
 ```c
-Hex2bin hex2bin(char *s);
+Hex2bin hex2bin(const char *s);
 
-<%= lines 'hex.c', '}', 'Hex2bin hex2bin\(char \*s\) {' %>
+<%= lines 'hex.c', '}', 'Hex2bin hex2bin\(const char \*s\) {' %>
 ```
 
 * `s`: a string to operate on; it can optionally contain "0x" prefix.

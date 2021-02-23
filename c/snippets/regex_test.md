@@ -5,7 +5,7 @@ title: regex_test
 Tests if a string matches a regex.
 
 ```c
-bool regex_test(char *pattern, char* s)
+bool regex_test(const char *pattern, const char* s)
 ```
 
 * `pattern`: a regex;

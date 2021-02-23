@@ -6,10 +6,10 @@ Handy funtions for arrays of strings:
 
 ```c
 void list_print(char **list);
-int list_len(char **list);
+int list_len(const char **list);
 void list_free(char ***v);
-char** list_scp(char **list);
-char** list_sort(char **list);
+char** list_scp(const char **list);
+char** list_sort(const char **list);
 ```
 
 * `list`: a pointer to an array of character strings (char\*)
@@ -27,7 +27,7 @@ freed with regular free(3), NOT with `list_free()`.
 (char **) 0x432fc20
 [cling]$ list_print(orig)
 ["facebook", "google", "apple"]
-[cling]$ char **sorted = list_sort(orig)
+[cling]$ char **sorted = list_sort((const char**)orig)
 (char **) 0x4d044c0
 [cling]$ list_print(sorted)
 ["apple", "facebook", "google"]

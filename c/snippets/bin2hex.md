@@ -12,7 +12,7 @@ d0bfd0bed180d0bed0b1d0bbd0b5d0bdd0be0a
 in shell.
 
 ```c
-char* bin2hex(char *s, int len)
+char* bin2hex(const char *s, int len);
 ```
 
 * `s`: a string to operate on;

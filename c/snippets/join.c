@@ -1,12 +1,10 @@
-// cling -Wno-writable-strings join.c
-
 #include "utils.h"
 
-char* join(char **list, const char *separator) {
+char* join(const char **list, const char *separator) {
   if (!list) return NULL;
 
   int len = 0, ilen = 0;
-  for (char **p = list; *p; p++) {
+  for (const char **p = list; *p; p++) {
     len++;                      // number of items in the list
     ilen += strlen(*p);         // sum of items length
   }
@@ -27,7 +25,7 @@ char* join(char **list, const char *separator) {
 void join() {
   test(NULL == join(NULL, " "));
 
-  typedef char *list[];
+  typedef const char *list[];
   test(NULL == join((list){NULL}, " "));
   test_streq(join((list){"foo", NULL}, " "), "foo");
   test_streq(join((list){"foo", "", NULL}, " "), "foo ");

@@ -5,9 +5,9 @@ title: Backticks
 Returns the stdout of a running command in a subshell with its exit code.
 
 ```c
-Backticks backticks(char* cmd);
+Backticks backticks(const char* cmd);
 
-<%= lines 'backticks.c', '#include "utils.h"', 'Backticks backticks\(char\* cmd\) {' %>
+<%= lines 'backticks.c', '#include "utils.h"', 'Backticks backticks\(const char\* cmd\) {' %>
 ```
 
 * `cmd`: a string containing a shell command line that is passed to

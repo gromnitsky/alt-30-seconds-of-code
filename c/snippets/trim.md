@@ -31,7 +31,7 @@ char *s = " foo "; trim2(s)   // segfaults
 (unsigned long) 3
 ```
 
-See [backticks](#backticks) examples where hazardous `trim2()` may be
+See [readline](#readline) examples where hazardous `trim2()` may be
 usefull.
 
 ```c

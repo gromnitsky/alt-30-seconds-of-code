@@ -7,8 +7,7 @@ repo](https://github.com/gromnitsky/alt-30-seconds-of-code).
 
 The snippets below are ready to use, except for they are written in a
 naïve manner: error checking prevents only crashes, malloc'ing is
-always optimistic, there are almost no *const* pointers (for they
-irritate me immensely) & numbers are oft *int*s.
+always optimistic & numbers are oft *int*s.
 
 The following header files are assumed as already included:
 

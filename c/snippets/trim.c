@@ -19,7 +19,7 @@ char* trim(const char *s) {
 }
 
 char* trim2(char s[]) {
-  if (!s) return "";
+  if (!s) return (char*)"";
   int start = nonspace(s, 1), size = strlen(s), len = 0;
   if (start != size) len = size - start - nonspace(s, -1);
   memmove(s, s+start, len);
@@ -32,6 +32,7 @@ void trim() {
   test_streq(trim(""), "");
   test_streq(trim("  qwerty   "), "qwerty");
 
+  test_streq(trim2(NULL), "");
   char s[] = "  foo \n"; test_streq(trim2(s), "foo");
   strcpy(s, ""); test_streq(trim2(s), "");
   strcpy(s, "  foo"); test_streq(trim2(s), "foo");

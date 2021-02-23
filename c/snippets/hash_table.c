@@ -24,7 +24,7 @@ HashTable* mk_hash_table(int buckets_len, void (*item_val_free)(void*)) {
 }
 
 // calculate an index for h->buckets
-unsigned int ht_hash(HashTable* h, char *key) {
+unsigned int ht_hash(HashTable* h, const char *key) {
   if (!key) key = "";
   unsigned char hash = 0;
   for (unsigned char *p = (unsigned char*)key; *p; p++)
@@ -32,7 +32,7 @@ unsigned int ht_hash(HashTable* h, char *key) {
   return hash & h->buckets_len;
 }
 
-HTItem* ht_find(HashTable* h, char *key) {
+HTItem* ht_find(HashTable* h, const char *key) {
   if (!key) return NULL;
   int idx = ht_hash(h, key);
   for (HTItem *item = h->buckets[idx]; item; item = item->next) {
@@ -41,7 +41,7 @@ HTItem* ht_find(HashTable* h, char *key) {
   return NULL;
 }
 
-void ht_add(HashTable* h, char *key, void *val) {
+void ht_add(HashTable* h, const char *key, void *val) {
   HTItem *item = ht_find(h, key);
   if (item) { // update existing value
     h->item_val_free(item->val);
@@ -71,7 +71,7 @@ void ht_print(HashTable* h) {
   }
 }
 
-void ht_rm(HashTable* h, char *key) {
+void ht_rm(HashTable* h, const char *key) {
   if (!ht_find(h, key)) return;
 
   for (int idx = 0; idx < h->buckets_len; idx++) {
@@ -153,7 +153,7 @@ void words_print(HTItem *item, void *_) {
 }
 
 void hash_table() {
-  char *input = "bad news is come to town, bad news is carry'd, "
+  const char *input = "bad news is come to town, bad news is carry'd, "
     "bad news is come to town, my love is marry'd";
   char **words = split("[ ,]+", input);
 

@@ -1,6 +1,6 @@
 #include "utils.h"
 
-char* bin2hex(char *s, int len) {
+char* bin2hex(const char *s, int len) {
   if (!s) return NULL;
   char *r = (char*)malloc(len*2 + 1); assert(r);
   *r = '\0';
@@ -17,7 +17,7 @@ typedef struct {
   int len;
 } Hex2bin;
 
-Hex2bin hex2bin(char *s) {
+Hex2bin hex2bin(const char *s) {
   Hex2bin r = { .len = -1 };
   if (!s) return r;
   if (strlen(s) > 2 && s[0] == '0' && tolower(s[1]) == 'x') s += 2;
@@ -28,7 +28,7 @@ Hex2bin hex2bin(char *s) {
 
   r.len = 0;
   char bytes[3];
-  for (char *p = s; *p; p += 2, r.len++) {
+  for (const char *p = s; *p; p += 2, r.len++) {
     snprintf(bytes, 3, "%s", p);
     char byte = strtol(bytes, NULL, 16);
     *pr++ = byte;

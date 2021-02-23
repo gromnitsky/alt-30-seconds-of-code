@@ -19,9 +19,10 @@ The difference between JS `replace()` and our replace:
 
 
 ```c
-char **split(char *pattern, char *s);
+char **split(const char *pattern, const char *s);
 
-char *replace(char *pattern, char *options, char *s, char *replacement);
+char *replace(const char *pattern, const char *options,
+              const char *s, const char *replacement);
 ```
 
 * `pattern`: a regex;

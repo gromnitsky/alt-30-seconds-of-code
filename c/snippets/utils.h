@@ -18,11 +18,11 @@ void __my_assert(const char *assertion, const char *file,
   exit(1);
 }
 
-void __my_test(bool expr, const char *assertion, char *file,
+void __my_test(bool expr, const char *assertion, const char *file,
                unsigned int line, const char *function) {
   bool ok = expr;
   fprintf(stderr, "%s:%d: `%s`: %s\n",
-          basename(file), line, assertion,
+          basename((char*)file), line, assertion,
           (ok ? "ok" : "FAILED"));
   if (!ok) exit(1);
 }
@@ -33,11 +33,11 @@ char* ansi_color(char *to, int color, const char* msg) {
   return to;
 }
 
-void __my_test_streq(char *actual, char *expected,
-                      const char *assertion, char *file,
+void __my_test_streq(const char *actual, const char *expected,
+                      const char *assertion, const char *file,
                       unsigned int line, const char *function) {
   bool ok = (0 == strcmp(actual, expected));
-  fprintf(stderr, "%s:%d: %s: ", basename(file), line, assertion);
+  fprintf(stderr, "%s:%d: %s: ", basename((char*)file), line, assertion);
   if (ok) {
     fprintf(stderr, "ok\n");
     return;
@@ -49,14 +49,14 @@ void __my_test_streq(char *actual, char *expected,
   exit(1);
 }
 
-void __my_test_listeq(char **actual, char **expected,
-                      const char *assertion, char *file,
+void __my_test_listeq(const char **actual, const char **expected,
+                      const char *assertion, const char *file,
                       unsigned int line, const char *function) {
   bool ok = true;
   if (list_len(actual) != list_len(expected)) {
     ok = false;
   } else {
-    char **pa = actual, **pe = expected;
+    const char **pa = actual, **pe = expected;
     for (; *pa; pa++, pe++) {
       if (0 != strcmp(*pa, *pe)) {
         ok = false;
@@ -65,15 +65,15 @@ void __my_test_listeq(char **actual, char **expected,
     }
   }
 
-  fprintf(stderr, "%s:%d: %s: ", basename(file), line, assertion);
+  fprintf(stderr, "%s:%d: %s: ", basename((char*)file), line, assertion);
   if (ok) { fprintf(stderr, "ok\n"); return; }
 
   char red[1024];
   ansi_color(red, 31, "FAILED");
   fprintf(stderr, "%s:\ngot ", red);
-  list_print(actual);
+  list_print((char**)actual);
   fprintf(stderr, "exp ");
-  list_print(expected);
+  list_print((char**)expected);
   exit(1);
 }
 
@@ -87,6 +87,6 @@ void __my_test_listeq(char **actual, char **expected,
  (__my_test_streq((actual), (expected), #actual, __FILE__, __LINE__, __func__))
 
 #define test_listeq(actual, expected) \
- (__my_test_listeq((actual), (expected), #actual, __FILE__, __LINE__, __func__))
+ (__my_test_listeq(((const char**)actual), (expected), #actual, __FILE__, __LINE__, __func__))
 
 #endif

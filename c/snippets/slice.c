@@ -20,7 +20,7 @@ _SliceRange _slice_calc(int len, int begin, int end) {
   return r;
 }
 
-char* slice(char *s, int begin, int end) {
+char* slice(const char *s, int begin, int end) {
   if (!s) return NULL;
   int len = strlen(s);
 
@@ -33,14 +33,14 @@ char* slice(char *s, int begin, int end) {
   return r;
 }
 
-char** list_slice(char **list, int begin, int end) {
+char** list_slice(const char **list, int begin, int end) {
   if (!list) return NULL;
   int len = list_len(list);
 
   _SliceRange range = _slice_calc(len, begin, end);
 
   char **r = (char**)malloc((range.size + 1)*sizeof(char*));
-  char **src = list+range.begin;
+  const char **src = list+range.begin;
   for (int idx = 0; idx < range.size; idx++) {
     r[idx] = strdup(*src++);
   }
@@ -71,9 +71,9 @@ void slice() {
   test_streq(slice("qwerty", -1, -1), "");
   test_streq(slice("qwerty", 1, -1), "wert");
 
-  typedef char *list[];
+  typedef const char *list[];
 
-  char *v[] = {"q", "w", "e", "r", "t", "y", NULL};
+  const char *v[] = {"q", "w", "e", "r", "t", "y", NULL};
   test(list_slice(NULL, 1, 2) == NULL);
   test_listeq(list_slice(v, 2, -1), ((list){"e", "r", "t", NULL}) );
   test_listeq(list_slice(v, 10000, 10000), ((list){NULL}) );

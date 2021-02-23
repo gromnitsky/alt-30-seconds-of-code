@@ -1,4 +1,4 @@
-// cling -Wno-writable-strings read_file.c -lcrypto
+// cling read_file.c -lcrypto
 #include "sha256.c"
 #include "utils.h"
 
@@ -35,7 +35,7 @@ char* _read_file(int fd, int *len) {
   return buf;
 }
 
-LargeFile read_file(char *name) {
+LargeFile read_file(const char *name) {
   LargeFile r = { .size = -1 };
   if (!name) return r;
 

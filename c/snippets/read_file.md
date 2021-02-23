@@ -5,7 +5,7 @@ title: Read a file into memory
 Reads contents of a file into a string.
 
 ```c
-LargeFile read_file(char *name);
+LargeFile read_file(const char *name);
 
 <%= lines 'read_file.c', '#include <fcntl.h>', 'char\* _read_file\(int fd, int \*len\) {' %>
 ```

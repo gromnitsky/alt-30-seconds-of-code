@@ -1,4 +1,4 @@
-// cling -Wno-writable-strings sha256.c -lcrypto
+// cling sha256.c -lcrypto
 #include "utils.h"
 #include "hex.c"
 
@@ -13,7 +13,7 @@ typedef struct {
   const EVP_MD *(*algo)();
 } CryptoDigest;
 
-CryptoDigest digest_init(char *algorithm) {
+CryptoDigest digest_init(const char *algorithm) {
   CryptoDigest cd  = { .bindata = NULL, .len = -1, .algo = EVP_sha1};
 
   if (!algorithm) algorithm = "";
@@ -24,7 +24,7 @@ CryptoDigest digest_init(char *algorithm) {
   return cd;
 }
 
-void digest_upd(CryptoDigest *cd, char *s, int len) {
+void digest_upd(CryptoDigest *cd, const char *s, int len) {
   if ( !(s && len >= 0)) return;
   assert(1 == EVP_DigestUpdate(cd->ctx, s, len));
 }
@@ -38,14 +38,14 @@ void digest_fin(CryptoDigest *cd) {
   EVP_MD_CTX_free(cd->ctx);
 }
 
-CryptoDigest digest(char *algorithm, char *s, int len) {
+CryptoDigest digest(const char *algorithm, const char *s, int len) {
   CryptoDigest cd = digest_init(algorithm);
   digest_upd(&cd, s, len);
   digest_fin(&cd);
   return cd;
 }
 
-char *digest_hex(char *algorithm, char *s) {
+char *digest_hex(const char *algorithm, const char *s) {
   if (!s) return NULL;
   CryptoDigest cd = digest(algorithm, s, strlen(s));
   char *r = bin2hex(cd.bindata, cd.len);
