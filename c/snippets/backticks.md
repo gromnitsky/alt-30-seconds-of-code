@@ -17,7 +17,7 @@ Backticks backticks(const char* cmd);
 internal error. `Backticks.stdout` is a null-terminated string that is
 malloc'ed and should be freed.
 
-The snippet uses [_read_file](#read_file). The example below uses
+The snippet uses [read_fd](#read_file). The example below uses
 [trim](#trim).
 
 ~~~

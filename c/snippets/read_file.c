@@ -12,7 +12,7 @@ typedef struct {
   char *data;
 } LargeFile;
 
-char* _read_file(int fd, int *len) {
+char* read_fd(int fd, int *len) {
   *len = 0;
   int bufsiz = BUFSIZ;
   char *buf = (char*)malloc(bufsiz);
@@ -47,7 +47,7 @@ LargeFile read_file(const char *name) {
   }
   snprintf(r.name, sizeof(r.name), "%s", name);
 
-  char *data = _read_file(fd, &r.size);
+  char *data = read_fd(fd, &r.size);
   if (fd) close(fd);
   r.data = data;
   return r;

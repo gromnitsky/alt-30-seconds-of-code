@@ -14,7 +14,7 @@ Backticks backticks(const char* cmd) {
   FILE *stream = popen(cmd, "r"); if (!stream) return r;
   fflush(stream);
   int len;
-  char *s = _read_file(fileno(stream), &len);
+  char *s = read_fd(fileno(stream), &len);
   r.exit_code = WEXITSTATUS(pclose(stream));
   r.stdout = s;
   r.stdout_len = len;
