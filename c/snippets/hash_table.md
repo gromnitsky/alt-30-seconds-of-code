@@ -78,32 +78,37 @@ In the example below we:
 This is what you get after running it:
 
 ~~~
- 0: come -> bad
- 2: marry'd -> town -> news
-34: love
-40: my -> carry'd
+ 0: marry'd -> town -> come
+ 1: news -> bad
+32: love
+40: my -> carry'd -> is
+41: to
 
-2 come
-3 bad
 1 marry'd
 2 town
+2 come
 3 news
+3 bad
 1 love
 1 my
 1 carry'd
-total = 8
-["come", "bad", "marry'd", "town", "news", "love", "my", "carry'd"]
+4 is
+2 to
+total = 10
+["marry'd", "town", "come", "news", "bad", "love", "my", "carry'd", "is", "to"]
 
-2 come
 1 marry'd
 2 town
+2 come
 1 love
 1 carry'd
+4 is
+2 to
 
- 0: come
- 2: marry'd -> town
-34: love
-40: carry'd
+ 0: marry'd -> town -> come
+32: love
+40: carry'd -> is
+41: to
 ~~~
 
 The 1st & the last blocks are `ht_print()` (left column is a bucket

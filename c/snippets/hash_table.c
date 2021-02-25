@@ -26,10 +26,10 @@ HashTable* mk_hash_table(int buckets_len, void (*item_val_free)(void*)) {
 // calculate an index for h->buckets
 unsigned int ht_hash(HashTable* h, const char *key) {
   if (!key) key = "";
-  unsigned char hash = 0;
+  unsigned int hash = 0;
   for (unsigned char *p = (unsigned char*)key; *p; p++)
     hash = 31*hash + *p;
-  return hash & h->buckets_len;
+  return hash & (h->buckets_len - 1);
 }
 
 HTItem* ht_find(HashTable* h, const char *key) {
