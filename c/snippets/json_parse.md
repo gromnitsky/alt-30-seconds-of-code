@@ -7,7 +7,7 @@ Read `{ "ip": "4.3.2.1", "city": "Atlantic City", ... }` using Jansson
 chosen by such projects as Emacs.
 
 ~~~
-$ curl 'https://ipinfo.io/1.2.3.4' | ./our-example
+$ curl -s 'https://ipinfo.io/1.2.3.4' | ./our-example
 ip = 1.2.3.4
 city = Koło
 region = Greater Poland
