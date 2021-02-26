@@ -2,6 +2,7 @@ let http = require('http')
 let url = require('url')
 let qs = require('querystring')
 let fs = require('fs')
+let path = require('path')
 let multiparty = require('multiparty')
 
 function concat_stream(s) {
@@ -22,6 +23,7 @@ let server = http.createServer(function (req, res) {
     }
     let u = url.parse(req.url, true)
 
+    // application/x-www-form-urlencoded
     if (req.method === "GET" & u.pathname === '/form1') {
         res.setHeader('Content-Type', 'text/html')
         res.end(`<!doctype html>
@@ -42,7 +44,7 @@ Age: <input type='number' name='age' value="100">
             res.end()
         }).catch( e => err(500, e.message))
 
-    } else if (req.method === "GET" & u.pathname === '/form2') {
+    } else if (req.method === "GET" & u.pathname === '/form2') { // multipart
         res.setHeader('Content-Type', 'text/html')
         res.end(`<!doctype html>
 <form action='/form2' method='post' enctype="multipart/form-data"
@@ -59,12 +61,6 @@ Photo: <input type='file' name='photo'>
 <img src='/${u.query.photo}'>
 `)
 
-    } else if (req.method === "GET" & /^\/tmp\//.test(u.pathname)) {
-        res.setHeader('Content-Type', 'image/webp')
-        let photo = fs.createReadStream(u.pathname.slice(1))
-        photo.on('error', e => err(500, `${err.syscall} ${e.code}`))
-        photo.pipe(res)
-
     } else if (req.method === 'POST' & u.pathname === '/form2') {
         fs.mkdirSync('tmp', {recursive:true})
         let form = new multiparty.Form({uploadDir: 'tmp'})
@@ -77,6 +73,21 @@ Photo: <input type='file' name='photo'>
             res.writeHead(303, {'Location': '/form2/success?'+qs.stringify(r)})
             res.end()
         })
+
+    } else if (req.method === "GET" & u.pathname === "/loop") {
+        res.writeHead(302, {'Location': '/loop'})
+        res.end()
+
+    } else if (req.method === "GET") {
+        let f = u.pathname.slice(1)
+        res.setHeader('Content-Type', {
+            '.c': 'text/plain',
+            '.webp': 'image/webp'
+        }[path.extname(f)] || 'application/octet-stream')
+        let file = fs.createReadStream(f)
+        file.on('error', e => err(500, `${err.syscall} ${e.code}`))
+        file.pipe(res)
+
     } else
         err(400)
 })
