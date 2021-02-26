@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@babel/standalone": "^7.12.12",
+    "multiparty": "^4.2.2",
     "react-dom": "^17.0.1"
   }
 }

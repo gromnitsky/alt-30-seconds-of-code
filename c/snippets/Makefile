@@ -13,3 +13,15 @@ json_parse.run: json_parse.c
 	cat $< | awk 'm==1 { print substr($$0, 4) } /^\/\/ test/ {m=1}' | $(cmd)
 
 cmd = cling $< -lcrypto -ljansson
+
+
+
+server.cmd = node http_test_uploads.js
+
+.PHONY: server
+server: kill
+	$(server.cmd) &
+
+.PHONY: kill
+kill:
+	-pkill -f '$(server.cmd)'
