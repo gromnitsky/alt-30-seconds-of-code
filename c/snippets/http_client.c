@@ -8,20 +8,24 @@
 
 typedef struct {
   char *body;
-  int len;
-  int code;
+  size_t len;
+  long code;
   HashTable *headers;
   // curl-specific
   int err_code;
   char err_msg[CURL_ERROR_SIZE];
   // private
   bool _final_header_line;
+  CURL *curl;
+  struct curl_slist *custom_headers;
 } HttpRes;
 
 void http_res_free(HttpRes *v) {
   if (!v) return;
-  ht_free(&(v->headers));
+  if (v->headers) ht_free(&(v->headers));
   free(v->body);
+  curl_slist_free_all(v->custom_headers);
+  curl_easy_cleanup(v->curl);
 }
 
 size_t http_header_callback(char *buf, size_t _, size_t len, void *userdata) {
@@ -51,27 +55,7 @@ size_t _http_get_chunk(char *chunk, size_t _, size_t len, void *userdata) {
   return len;
 }
 
-HttpRes http_prepare(const char *url, CURL **curl) {
-  HttpRes r = { .err_code = -1 };
-  strcpy(r.err_msg, "no url or curl_easy_init() fail");
-  *curl = curl_easy_init();
-  if ( !(*curl && url)) return r;
-
-  curl_easy_setopt(*curl, CURLOPT_ERRORBUFFER, r.err_msg);
-  curl_easy_setopt(*curl, CURLOPT_URL, url);
-  curl_easy_setopt(*curl, CURLOPT_FOLLOWLOCATION, 1);
-  curl_easy_setopt(*curl, CURLOPT_MAXREDIRS, 5);
-  curl_easy_setopt(*curl, CURLOPT_WRITEFUNCTION, _http_get_chunk);
-  curl_easy_setopt(*curl, CURLOPT_WRITEDATA, &r);
-  r.headers = mk_hash_table(42, free);
-  curl_easy_setopt(*curl, CURLOPT_HEADERFUNCTION, http_header_callback);
-  curl_easy_setopt(*curl, CURLOPT_HEADERDATA, &r);
-  if (getenv("CURLOPT_VERBOSE") && 0 == strcmp(getenv("CURLOPT_VERBOSE"), "1")) {
-    curl_easy_setopt(*curl, CURLOPT_VERBOSE, 1);
-  }
-  return r;
-}
-
+// result must be freed with curl_slist_free_all()
 struct curl_slist* http_custom_headers(CURL *curl, const char **headers) {
   struct curl_slist *hdr = NULL;
   if (headers) {
@@ -81,22 +65,37 @@ struct curl_slist* http_custom_headers(CURL *curl, const char **headers) {
   return hdr;
 }
 
-void http_get_status(HttpRes *r, CURL *curl) {
-  int code;
-  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
-  r->code = code;
+HttpRes http_init(const char *url, const char **headers) {
+  HttpRes r = { .err_code = -1 };
+  strcpy(r.err_msg, "no url or curl_easy_init() fail");
+  CURL *curl = curl_easy_init();
+  if ( !(curl && url)) return r;
+
+  r.curl = curl;
+  curl_easy_setopt(r.curl, CURLOPT_URL, url);
+  curl_easy_setopt(r.curl, CURLOPT_FOLLOWLOCATION, 1);
+  curl_easy_setopt(r.curl, CURLOPT_MAXREDIRS, 10);
+  curl_easy_setopt(r.curl, CURLOPT_WRITEFUNCTION, _http_get_chunk);
+  r.headers = mk_hash_table(42, free);
+  curl_easy_setopt(r.curl, CURLOPT_HEADERFUNCTION, http_header_callback);
+  if (getenv("CURLOPT_VERBOSE") && 0 == strcmp(getenv("CURLOPT_VERBOSE"), "1")) {
+    curl_easy_setopt(r.curl, CURLOPT_VERBOSE, 1);
+  }
+  r.custom_headers = http_custom_headers(r.curl, headers);
+  return r;
+}
+
+void http_run(HttpRes *r) {
+  curl_easy_setopt(r->curl, CURLOPT_ERRORBUFFER, r->err_msg);
+  curl_easy_setopt(r->curl, CURLOPT_HEADERDATA, r);
+  curl_easy_setopt(r->curl, CURLOPT_WRITEDATA, r);
+  r->err_code = curl_easy_perform(r->curl);
+  curl_easy_getinfo(r->curl, CURLINFO_RESPONSE_CODE, &r->code);
 }
 
 HttpRes http_get(const char *url, const char **headers) {
-  CURL *curl = NULL;
-  HttpRes r = http_prepare(url, &curl);
-  struct curl_slist *hdr = http_custom_headers(curl, headers);
-
-  r.err_code = curl_easy_perform(curl);
-
-  http_get_status(&r, curl);
-  curl_slist_free_all(hdr);
-  curl_easy_cleanup(curl);
+  HttpRes r = http_init(url, headers);
+  http_run(&r);
   return r;
 }
 
@@ -125,19 +124,15 @@ char *http_ht_to_post_data(CURL *curl, HashTable *fields) {
 }
 
 HttpRes http_post(const char *url, const char **headers, HashTable *fields) {
-  CURL *curl = NULL;
-  HttpRes r = http_prepare(url, &curl);
-  struct curl_slist *hdr = http_custom_headers(curl, headers);
+  HttpRes r = http_init(url, headers);
 
   assert(fields);
-  char *data = http_ht_to_post_data(curl, fields);
-  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
-  r.err_code = curl_easy_perform(curl);
-  free(data);
+  char *data = http_ht_to_post_data(r.curl, fields);
+  curl_easy_setopt(r.curl, CURLOPT_POSTFIELDS, data);
 
-  http_get_status(&r, curl);
-  curl_slist_free_all(hdr);
-  curl_easy_cleanup(curl);
+  http_run(&r);
+
+  free(data);
   return r;
 }
 
@@ -148,7 +143,8 @@ char* http_res_body_str(HttpRes *r) {
   return r->body;
 }
 
-void http_get() {
+
+void http_client() {
   const char *hdr[] { "User-Agent: test/0.0.1", NULL };
   HttpRes r = http_get("http://127.0.0.1:3000/cat.webp", hdr);
   if (r.err_code != 0) {
@@ -177,6 +173,24 @@ void http_get() {
     test(200 == r.code);
     test_streq(http_res_body_str(&r), "{\"name\":\"William Chaloner\",\"age\":\"49\"}");
   }
+  http_res_free(&r);
 
+  // multipart
+  r = http_init("http://127.0.0.1:3000/form2", NULL);
+  curl_mime *mime = curl_mime_init(r.curl);
+  curl_mimepart *p = curl_mime_addpart(mime);
+  curl_mime_name(p, "name"); curl_mime_data(p, "a cat", CURL_ZERO_TERMINATED);
+  p = curl_mime_addpart(mime);
+  curl_mime_name(p, "photo"); curl_mime_filedata(p, "cat.webp");
+  curl_easy_setopt(r.curl, CURLOPT_MIMEPOST, mime);
+  http_run(&r);
+  curl_mime_free(mime);
+  if (r.err_code != 0) {
+    errx(1, "%d: %s", r.err_code, r.err_msg);
+  } else {
+    test(200 == r.code);
+    test(r.len > 50);
+    test(strstr(http_res_body_str(&r), "<img src"));
+  }
   http_res_free(&r);
 }
