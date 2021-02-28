@@ -1,9 +1,11 @@
-special-case := str_vector_utils.c readline.c json_parse.c
+special-case := readline.c json_parse.c
 c := $(filter-out $(special-case), $(wildcard *.c))
 
 %.run: %.c; $(cmd)
 
-test: $(c:%.c=%.run) readline.run
+run := $(c:%.c=%.run) readline.run json_parse.run
+test: $(run); $(MAKE) --no-print-directory kill
+$(run): server
 
 readline.run: readline.c
 	printf '' | $(cmd)
@@ -12,16 +14,13 @@ readline.run: readline.c
 json_parse.run: json_parse.c
 	cat $< | awk 'm==1 { print substr($$0, 4) } /^\/\/ test/ {m=1}' | $(cmd)
 
-cmd = cling $< -lcrypto -ljansson
+cmd = cling -Wall $< -lcurl -lcrypto -ljansson
 
 
 
 server.cmd = node http_test_uploads.js
 
-.PHONY: server
 server: kill
 	$(server.cmd) &
-
-.PHONY: kill
 kill:
 	-pkill -f '$(server.cmd)'

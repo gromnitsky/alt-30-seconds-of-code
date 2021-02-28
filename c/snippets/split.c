@@ -39,7 +39,7 @@ char **regex_match(const char *pattern, const char *options,
   regmatch_t pm;
   const char *p = s;
   char **result = NULL;
-  int error, idx = 0, flags = 0, len = strlen(s), result_size = 3,
+  int error, idx = 0, len = strlen(s), result_size = 3,
     step = 0, replacement_count = 0, circumflex, fugazy;
   do {
     result = _list_realloc(result, idx, &result_size);

@@ -9,7 +9,8 @@
 
 #include <libgen.h>
 
-#include "str_vector_utils.c"
+int list_len(const char **list);
+void list_print(char **list);
 
 void __my_assert(const char *assertion, const char *file,
                  unsigned int line, const char *function) {
@@ -88,5 +89,7 @@ void __my_test_listeq(const char **actual, const char **expected,
 
 #define test_listeq(actual, expected) \
  (__my_test_listeq(((const char**)actual), (expected), #actual, __FILE__, __LINE__, __func__))
+
+#include "str_vector_utils.c"
 
 #endif
