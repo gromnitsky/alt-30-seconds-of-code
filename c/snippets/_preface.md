@@ -19,5 +19,4 @@ The following header files are assumed as already included:
 #include <ctype.h>
 ```
 
-<small>If you're looking at this from the phone, the TOC panel on the
-left may be invisible.</small>
+All examples were tested using [cling](https://github.com/root-project/cling).

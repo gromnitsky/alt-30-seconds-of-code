@@ -44,5 +44,5 @@ The utils are used by many snippets, for example, [split](#split),
 [Hash table](#hash_table) or [slice](#slice).
 
 ```c
-<%= File.read 'str_vector_utils.c' %>
+<%= lines 'str_vector_utils.c', '#include "utils.h"', 'void str_vector_utils\(\) {' %>
 ```
