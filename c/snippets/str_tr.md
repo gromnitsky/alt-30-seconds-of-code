@@ -10,7 +10,7 @@ char* str_tr2(char *s, int (*fn)(int));
 ```
 
 * `s`: a string to operate on;
-* `fn`: a function to apply, for example, tolower(3).
+* `fn`: a function to apply, for example, tolower(3) or `rot13()`.
 
 `str_tr()` returns a malloc'ed value that should be freed. `str_tr2()`
 does transformations *in-place* & returns a pointer to a modified
@@ -23,6 +23,8 @@ str_tr("qwerty", toupper) // "QWERTY"
 (char [7]) "qwerty"
 [cling]$ str_tr2(s, toupper)
 (char [7]) "QWERTY"
+[cling]$ str_tr("Oof Madon, what a beating we gave this poor prick!", rot13)
+(char *) "Bbs Znqba, jung n orngvat jr tnir guvf cbbe cevpx!"
 ```
 
 ```c

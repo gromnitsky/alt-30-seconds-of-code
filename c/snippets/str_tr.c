@@ -18,6 +18,12 @@ char* str_tr2(char *s, int (*fn)(int)) {
   return s;
 }
 
+int rot13(int c) {
+  if ((c >= 65 && c <= 77) || (c >= 97 && c <= 109)) return c+13;
+  if ((c >= 78 && c <= 90) || (c >= 110 && c <= 122)) return c-13;
+  return c;
+}
+
 void str_tr() {
   char s[] = "qwe";
   str_tr2(s, toupper);
@@ -27,4 +33,8 @@ void str_tr() {
 
   test_streq(str_tr("", toupper), "");
   test_streq(str_tr("qwerty", toupper), "QWERTY");
+
+  char a1[] = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890";
+  char a2[] = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890";
+  test_streq(str_tr2(str_tr2(a1, rot13), rot13), a2);
 }
