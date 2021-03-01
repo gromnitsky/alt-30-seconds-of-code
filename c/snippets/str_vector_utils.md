@@ -10,6 +10,7 @@ int list_len(const char **list);
 void list_free(char ***v);
 char** list_scp(const char **list);
 char** list_sort(const char **list);
+char** list_reverse(const char **list);
 ```
 
 * `list`: a pointer to an array of character strings (char\*)
@@ -19,7 +20,9 @@ char** list_sort(const char **list);
 
 `list_sort()` returns a new sorted array.
 
-The return values of the last 2 functions are malloc'ed & should be
+`list_reverse()` returns a new reversed array.
+
+The return values of the last 3 functions are malloc'ed & should be
 freed with regular free(3), NOT with `list_free()`.
 
 ```
@@ -46,3 +49,7 @@ The utils are used by many snippets, for example, [split](#split),
 ```c
 <%= lines 'str_vector_utils.c', '#include "utils.h"', 'void str_vector_utils\(\) {' %>
 ```
+
+<sup>†</sup> If you're opposed to *shallowness* of
+`list_scp/list_sort/list_reverse`, add strdup(3) call to `list_scp()`
+& `list_reverse()`. Then you can use `list_free()` with all 3 of them.

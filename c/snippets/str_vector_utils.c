@@ -6,10 +6,9 @@
 void list_print(char **list) {
   if (!list) { fprintf(stderr, "(null)\n"); return; }
   int idx = 0;
-  for (char **p = list; *p; p++, idx++) {
-    fprintf(stderr, "%s\"%s\"%s", idx > 0 ? ", " : "[", *p, *(p+1) == NULL ? "]\n" : "");
-  }
-  if (!idx) fprintf(stderr, "[]\n");
+  for (char **p = list; *p; p++, idx++)
+    fprintf(stderr, "%s\"%s\"", idx > 0 ? ", " : "[", *p);
+  fprintf(stderr, "%s\n", idx ? "]" : "[]");
 }
 
 int list_len(const char **list) {
@@ -31,7 +30,7 @@ char** list_scp(const char **list) {
   int len = list_len(list);
   char **r = (char**)malloc((len+1) * sizeof(char*));
   char **src = (char**)list, **dest = r;
-  while (*src) *dest++ = *src++;
+  while (*src) *dest++ = *src++; // †
   r[len] = NULL;
   return r;
 }
@@ -50,14 +49,29 @@ char** list_sort(const char **list) {
   return copy;
 }
 
+char** list_reverse(const char **list) {
+  if (!list) return NULL;
+  int len = list_len(list);
+  char **r = (char**)malloc((len+1)*sizeof(char*));
+  char **rp = r;
+
+  for (list = &list[--len]; len >= 0; len--) *r++ = (char*)*list--; // †
+  *r = NULL;
+  return rp;
+}
+
 
 void str_vector_utils() {
   typedef const char *list[];
 
-  const char *orig1[] = { "foo", "bar", "baz", NULL };
-  const char *orig2[] = { "foo", "bar", "baz", NULL };
-  test_listeq(list_scp(orig1), orig1);
-  test_listeq(orig1, orig2);
+  const char *v[] = { "foo", "bar", "baz", NULL };
+  const char *v_rev[] = { "baz", "bar", "foo", NULL };
+  const char *v2[] = { "foo", "bar", "baz", NULL };
+  test_listeq(list_scp(v), v);
+  test_listeq(v, v2);
+
+  test_listeq(list_reverse(v), v_rev);
+  test_listeq(v, v2);
 
   const char *a1[] = {"bar", "eggplant", "gate", "car", "door", "apple", "fork", NULL};
   const char *a2[] = {"bar", "eggplant", "gate", "car", "door", "apple", "fork", NULL};
