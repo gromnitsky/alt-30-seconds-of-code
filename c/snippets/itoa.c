@@ -1,9 +1,14 @@
-#include <math.h>
 #include "utils.h"
+#include <math.h>
 
-char *itoa(int n) {
+int itoa_len(int n) {
   int len = n == 0 ? 1 : floor(log10l(labs(n)))+1;
   if (n < 0) len++;
+  return len;
+}
+
+char *itoa(int n) {
+  int len = itoa_len(n);
   char *s = (char*)malloc(len+1);
   snprintf(s, len+1, "%d", n);
   return s;

@@ -4,6 +4,8 @@ title: itoa
 
 Converts an integer to a string.
 
+Linker flags: `-lm`.
+
 ```c
 char *itoa(int n);
 ```
@@ -15,8 +17,6 @@ itoa(-10) // "-10"
 ```
 
 ```c
-#include <math.h>
-
 <%= lines 'itoa.c', '#include "utils.h"', 'void itoa\(\) {' %>
 ```
 
