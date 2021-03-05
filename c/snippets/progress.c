@@ -38,7 +38,7 @@ Progress* progress_init(int min, int max) {
   p->min = min; p->max = max;
   p->update_delay = 100000000; // 100 ms
   p->last_tick = 0;
-  strcpy(p->prefix, ""); strcpy(p->suffix, "");
+  p->prefix[0] = '\0'; p->suffix[0] = '\0';
   return p;
 }
 

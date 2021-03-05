@@ -66,8 +66,7 @@ struct curl_slist* _http_custom_headers(CURL *curl, const char **headers) {
 }
 
 HttpRes http_init(const char *url, const char **headers) {
-  HttpRes r = { .err_code = -1 };
-  strcpy(r.err_msg, "no url or curl_easy_init() fail");
+  HttpRes r = { .err_code = -1, .err_msg = "no url or curl_easy_init() fail" };
   CURL *curl = curl_easy_init();
   if ( !(curl && url)) return r;
 
