@@ -2,28 +2,24 @@
 title: Progress indicator
 ---
 
-Draw on stderr `123/456 26.97%`, carefully erasing previous values on
-a TTY.
+Redraw `123/456 26.97%` on stderr when it's connected to a tty.
 
 ~~~
 Progress* progress_init(int min, int max);
 void progress_update(Progress *p, int cur);
 void progress_end(Progress **p);
 
-typedef struct {
-  int first;
-  int last;
-  int cur;
-  long update_delay;
-  // private fields are not shown
+<%= lines 'progress.c', '#include <unistd.h>', '  // private' %>
+  // private fields are skipped
 } Progress;
 ~~~
 
-The indicator redraws itself no more often that 100ms, which is the
-default value of `Progress.update_delay`.
+The indicator repaints itself no more often that 100ms, which is a
+default value of `Progress.update_delay`. Increase it in case of a
+cursor flickering.
 
 * `min`, `max`: the indicator uses this to calculate the %;
-* `p`: the result from `progress_init()`;
+* `p`: a result from `progress_init()`;
 * `cur`: a current value, presumably between `min` & `max`.
 
 `progress_init()` returns a malloc’ed value that should be freed with

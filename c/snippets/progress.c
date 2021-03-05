@@ -4,10 +4,9 @@
 #include <unistd.h>
 
 typedef struct {
-  int min;
-  int max;
-  int cur;
-  long update_delay;
+  int min, max, cur;
+  long update_delay; // nanoseconds
+  char prefix[512], suffix[512];
   // private
   long last_tick;
   char buf[1024];
@@ -27,20 +26,10 @@ void _progress_render(Progress *p) { /* 123/456  26.97% */
   if (percent > 100) percent = 100;
 
   int max_len = itoa_len(p->max);
-  snprintf(p->buf, sizeof(p->buf), "%*d/%d %6.2f%%",
-           max_len,  p->cur, p->max, percent);
+  snprintf(p->buf, sizeof(p->buf), "%s%*d/%d %6.2f%%%s",
+           p->prefix,  max_len,  p->cur, p->max, percent, p->suffix);
 
-  if (isatty(2)) {
-    if (p->last_tick) { // erase prev string
-      int len = strlen(p->buf);
-      char eraser[len+1]; memset(eraser, '\b', len); eraser[len] = '\0';
-      fprintf(stderr, "%s", eraser);
-    }
-    fprintf(stderr, "%s", p->buf);
-  } else {
-    fprintf(stderr, "%s\n", p->buf);
-  }
-
+  fprintf(stderr, isatty(2) ? "\33[2K\r%s" : "%s\n", p->buf);
   p->last_tick = epoch_ns();
 }
 
@@ -49,10 +38,12 @@ Progress* progress_init(int min, int max) {
   p->min = min; p->max = max;
   p->update_delay = 100000000; // 100 ms
   p->last_tick = 0;
+  strcpy(p->prefix, ""); strcpy(p->suffix, "");
   return p;
 }
 
 void progress_update(Progress *p, int cur) {
+  if (!p) return;
   p->cur = cur;
   _progress_render(p);
 }
@@ -68,9 +59,11 @@ void progress_end(Progress **p) {
 
 void progress() {
   Progress *prg = progress_init(0, 50000);
-  fprintf(stderr, "%s", "progress so far: "); // note the absence of \n
+  strcpy(prg->prefix, "progress so far: ");
+  strcpy(prg->suffix, ", press <Ctrl-C> to abort");
 
   for (int n = 0; n <= prg->max; n++) {
+    if (n == 10000) fprintf(stderr, "\noh hello!\n");
     progress_update(prg, n);
     usleep(1);
   }
