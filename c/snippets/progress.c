@@ -21,21 +21,22 @@ long epoch_ns() {
 void _progress_render(Progress *p) { /* 123/456  26.97% */
   if (p->last_tick && (epoch_ns() - p->last_tick < p->update_delay)) return;
 
-  double percent = (p->cur/(p->max+0.0))*100;
+  double percent = ((p->cur - p->min) * 100) / ((p->max - p->min)+0.0);
   if (percent < 0) percent = 0;
   if (percent > 100) percent = 100;
 
   int max_len = itoa_len(p->max);
-  snprintf(p->buf, sizeof(p->buf), "%s%*d/%d %6.2f%%%s",
-           p->prefix,  max_len,  p->cur, p->max, percent, p->suffix);
+  snprintf(p->buf, sizeof(p->buf), "%s%*d/%*d/%d %6.2f%%%s",
+           p->prefix, max_len,p->min, max_len,p->cur, p->max,percent,p->suffix);
 
   fprintf(stderr, isatty(2) ? "\33[2K\r%s" : "%s\n", p->buf);
   p->last_tick = epoch_ns();
 }
 
 Progress* progress_init(int min, int max) {
+  if (max < min) return NULL;
   Progress *p = (Progress*)malloc(sizeof(Progress));
-  p->min = min; p->max = max;
+  p->min = min; p->cur = min; p->max = max;
   p->update_delay = 100000000; // 100 ms
   p->last_tick = 0;
   p->prefix[0] = '\0'; p->suffix[0] = '\0';
@@ -58,11 +59,11 @@ void progress_end(Progress **p) {
 
 
 void progress() {
-  Progress *prg = progress_init(0, 50000);
+  Progress *prg = progress_init(-11111, 55555);
   strcpy(prg->prefix, "progress so far: ");
   strcpy(prg->suffix, ", press <Ctrl-C> to abort");
 
-  for (int n = 0; n <= prg->max; n++) {
+  for (int n = prg->min; n <= prg->max; n++) {
     if (n == 10000) fprintf(stderr, "\noh hello!\n");
     progress_update(prg, n);
     usleep(1);

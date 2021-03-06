@@ -2,7 +2,24 @@
 title: Progress indicator
 ---
 
-Redraw `123/456 26.97%` on stderr when it's connected to a tty.
+Redraw `min/cur/max %` indicator on stderr when it's connected to a
+tty: <code id="snippet__progress">-5/-5/17 0.00%</code>
+
+<script>
+document.addEventListener('DOMContentLoaded', snippet_progress)
+function snippet_progress() {
+  let node = document.querySelector('#snippet__progress')
+  let delay = 2000
+  let min = -5, cur = -5, max = 17
+  let update = () => {
+    let percent = (((cur - min) * 100) / ((max - min)+0.0)).toFixed(2)
+    node.innerText = `${min}/${cur++}/${max} ${percent}%`
+    if (cur > max) cur = min
+    setTimeout(update, delay)
+  }
+  setTimeout(update, 0)
+}
+</script>
 
 ~~~
 Progress* progress_init(int min, int max);
