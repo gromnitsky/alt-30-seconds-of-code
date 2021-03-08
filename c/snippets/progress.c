@@ -18,7 +18,7 @@ long epoch_ns() {
     return (long)ts.tv_sec * 1000000000L + ts.tv_nsec;
 }
 
-void _progress_render(Progress *p) { /* 123/456  26.97% */
+void _progress_render(Progress *p) {
   if (p->last_tick && (epoch_ns() - p->last_tick < p->update_delay)) return;
 
   double percent = ((p->cur - p->min) * 100) / ((p->max - p->min)+0.0);

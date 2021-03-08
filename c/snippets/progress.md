@@ -32,8 +32,8 @@ void progress_end(Progress **p);
 ~~~
 
 The indicator repaints itself no more often that 100ms, which is a
-default value of `Progress.update_delay`. Increase it in case of a
-cursor flickering.
+default value of `Progress.update_delay`. Increase it in case of
+flickering.
 
 * `min`, `max`: the indicator uses this to calculate the %;
 * `p`: a result from `progress_init()`;
