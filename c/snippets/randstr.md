@@ -5,8 +5,8 @@ title: Random string
 Returns a random string of a user-requested length.
 
 ```c
-char* randstr(int len)
-char *randstr2(int len)
+char* randstr(int len);
+char* randstr2(int len);
 ```
 
 The first function gets pseudo-random data using plain random(3)

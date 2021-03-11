@@ -1,10 +1,11 @@
-#include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
 
 #include "utils.h"
 #include "regex_test.c"
 #include "hex.c"
+
+#include <time.h>
 
 char* randstr(int len) {
   if (!len || len < 1) len = 32;
