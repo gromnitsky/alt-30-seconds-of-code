@@ -47,3 +47,9 @@ The example uses [list_len & list_print](str_vector_utils).
 ```c
 <%= lines 'shuffle_array.c', '#include "utils.h"', '// a helper' %>
 ```
+
+Why macro generators? While `mk_shuffle2_fn` could be easily rewritten
+as `#define shuffle2(type, arr, len) for (int idx = 0...`, functions
+from `mk_shuffle_fn` macro allocate a chunk of memory on the heap &
+return its address. The only way to give such an address (in a regular
+macro) to a caller, is to use GCC *statement expression* extension.
