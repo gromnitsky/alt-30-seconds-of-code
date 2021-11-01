@@ -7,6 +7,9 @@ JavaScript-like `String.prototype.split()` &
 both use crude POSIX `regexec()` to find matches & hence share almost
 all the code.
 
+If your pattern is a simple string (like `:` or a space), see [Simple
+split](#simple_split) instead.
+
 This is the most complex/long snipped so far, but it's so handy that I
 decided to put it here anyway.
 
