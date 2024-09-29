@@ -141,7 +141,7 @@
           r.html = r.html || '<div id="root"></div>'
           r.title = article.querySelector('h2').innerText
           r.js_pre_processor = 'babel' // includes jsx plugin
-          r.js_external = ['https://unpkg.com/react@17/umd/react.development.js', 'https://unpkg.com/react-dom@17/umd/react-dom.development.js'].join`;`
+          r.js_external = ['https://unpkg.com/react@18/umd/react.development.js', 'https://unpkg.com/react-dom@18/umd/react-dom.development.js'].join`;`
           r.js = [r.js, r.jsx].join`\n`
           delete r.jsx
           return r

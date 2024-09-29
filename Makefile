@@ -8,7 +8,7 @@ all: $(o)/index.html
 $(o)/%.html: $(i)/%.md
 	$(mkdir)
 	echo '<article id="$(id)">' > $@
-	$(if $(title),echo '<h2>$(title)</h2>' >> $@)
+	$(if $(title),echo '<h2>'$(call se,$(title))'</h2>' >> $@)
 	cd $(dir $<) && erb -r $(CURDIR)/lib.rb  $(notdir $<) | pandoc -t html --no-highlight >> $(CURDIR)/$@
 	echo '</article>' >> $@
 
@@ -33,6 +33,7 @@ all: $(deps)
 SHELL := bash -o pipefail
 .DELETE_ON_ERROR:
 mkdir = @mkdir -p $(dir $@)
+se = '$(subst ','\'',$1)'
 
 upload: $(o)/index.html $(if $(deps),$(o)/node_modules)
 	rsync -av --progress $^ gromnitsky@web.sourceforge.net:/home/user-web/gromnitsky/htdocs/articles/alt30soc/$(notdir $(o))/

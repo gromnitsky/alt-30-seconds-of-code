@@ -8,7 +8,7 @@ Snippets from this repo:
 
 * [Plain C](http://gromnitsky.users.sourceforge.net/articles/alt30soc/c/)
 
-Why & how: http://gromnitsky.blogspot.com/2021/01/fixing-30-seconds-of-code.html
+Why & how: https://sigwait.org/~alex/blog/2021/01/30/fixing-30-seconds-of-code.html
 
 ## Reqs
 
@@ -32,4 +32,7 @@ Why & how: http://gromnitsky.blogspot.com/2021/01/fixing-30-seconds-of-code.html
 
 ## License
 
-MIT
+MIT, including "Plain C" snippets.
+
+`js/`, `css/`, and `react/` dirs are from the defunct or "archived"
+repos. All 3 were licensed under the CC0-1.0 License.
