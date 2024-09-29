@@ -1,11 +1,8 @@
 # An alternative interface to '30 seconds of code'
 
-* [css](http://gromnitsky.users.sourceforge.net/articles/alt30soc/css/)
-* [react](http://gromnitsky.users.sourceforge.net/articles/alt30soc/react/)
-* [javascript](http://gromnitsky.users.sourceforge.net/articles/alt30soc/js/)
-
-Snippets from this repo:
-
+* [CSS](http://gromnitsky.users.sourceforge.net/articles/alt30soc/css/)
+* [React](http://gromnitsky.users.sourceforge.net/articles/alt30soc/react/)
+* [JavaScript](http://gromnitsky.users.sourceforge.net/articles/alt30soc/js/)
 * [Plain C](http://gromnitsky.users.sourceforge.net/articles/alt30soc/c/)
 
 Why & how: https://sigwait.org/~alex/blog/2021/01/30/fixing-30-seconds-of-code.html
@@ -14,21 +11,17 @@ Why & how: https://sigwait.org/~alex/blog/2021/01/30/fixing-30-seconds-of-code.h
 
 * pandoc
 * ruby
-* `npm i -g js-yaml`
+* `npm i -g js-yaml json`
 
 ## Compilation
 
-1. Clone one of the supported repos, for example, about css:
+    $ npm i
 
-        $ git clone https://github.com/30-seconds/30-seconds-of-css
+Generate `_out/css/index.html`:
 
-2. Clone this repo, cd to it, fetch optional deps:
+    $ make i=css/snippets o=_out/css t=css
 
-        $ npm i
-
-3. Generate `_out/css/index.html`:
-
-        $ make i=../30-seconds-of-css/snippets o=_out/css t=css
+Replace `css` with `c`, `js`, or `react`.
 
 ## License
 
